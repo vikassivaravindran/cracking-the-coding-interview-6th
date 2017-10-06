@@ -1,0 +1,239 @@
+chapter1
+4th version +6th version
+(4th version)
+1.1
+ public static boolean Test(String s)
+    {
+    	int[] asc=new int[256];
+    	for(int i=0;i<asc.length;i++)
+    	{
+    		asc[i]=0;
+    	}
+    	for(int i=0;i<s.length();i++)
+    	{
+    		asc[(int)s.charAt(i)]++;
+    	}
+    	for(int i=0;i<asc.length;i++)
+    	{
+    		if(asc[i]>1)
+    			return false;
+    	}
+    	return true;
+    }
+    
+1.2
+public static String Reverse(String s)
+    {
+    	if(s.length()<3)
+    		return s;
+    	char[] a=s.toCharArray();
+    	int low=0;
+    	int high=s.length()-2;
+    	while(low<high)
+    	{
+    		char c=a[low];
+    		a[low]=a[high];
+    		a[high]=c;
+    		low++;
+    		high--;
+    	}
+    	s=new String(a);
+    	s+='\0';
+    	return s;
+    }
+    
+1.3
+public static void Test(char[] a)
+    {
+    	if(a.length<2)
+    		return;
+        int tail=1;
+        for(int i=1;i<a.length;i++)
+        {
+        	int j;
+        for(j=0;j<tail;j++)
+        {
+        	if(a[i]==a[j])
+        		break;
+        }
+        if(j==tail)
+        {
+        	a[tail]=a[i];
+        	tail++;
+        }
+        }
+        a[tail]=0;
+    }
+
+1.4
+public static boolean Test(String s1,String s2)
+    {
+    	if(s1==null&&s2==null)
+    		return true;
+    	else if(s1==null||s2==null)
+    		return false;
+    	s1.toLowerCase();
+    	s2.toLowerCase();
+    	if(s1.length()!=s2.length())
+    		return false;
+    	else
+    	{
+    		for(int i=0;i<s1.length();i++)
+    			if(!s2.contains(String.valueOf(s1.charAt(i))))
+    				return false;
+    		for(int i=0;i<s2.length();i++)
+    			if(!s1.contains(String.valueOf(s2.charAt(i))))
+    				return false;
+    	}
+    	return true;
+    }
+    
+1.5
+ public static String Test(String s1)
+    {
+    	s1=s1.replaceAll("\\s", "%20");
+    	return s1;
+    }
+    
+public static String Test(String s1)
+    {
+    	if(s1==null)
+    		return s1;
+    	String s2="";
+    	int start=0;
+    	int end=0;
+    	for(int i=1;i<s1.length();i++)
+    	{
+    		if(s1.charAt(i)==' ')
+    		{
+    			end=i-1;
+    			s2+=s1.substring(start,end+1)+"%20";
+    			start=end+2;
+    		}
+    	}
+    	s2+=s1.substring(start,s1.length());
+    	return s2;
+    }
+    
+1.7
+public static void SetZero(int[][] m)
+	{
+		int p=m.length;
+		int q=m[0].length;
+		int[][] n=new int[p][q];
+		for(int i=0;i<p;i++)
+			for(int j=0;j<q;j++)
+			{
+				n[i][j]=0;
+			}
+		for(int i=0;i<p;i++)
+			for(int j=0;j<q;j++)
+			{
+				if(m[i][j]==0)
+				{
+					for(int k=0;k<q;k++)
+						n[i][k]=1;
+					for(int k=0;k<p;k++)
+						n[k][j]=1;
+				}
+			}
+		for(int i=0;i<p;i++)
+			for(int j=0;j<q;j++)
+			{
+				if(n[i][j]!=1)
+					n[i][j]=m[i][j];
+				else
+					n[i][j]=0;
+			}
+		for(int i=0;i<p;i++)
+			for(int j=0;j<q;j++)
+		System.out.println(n[i][j]);		
+	}
+
+1.6
+public static void SetZero(int[][] m)
+	{
+		int p=m.length;
+		for(int i=0;i<p/2;i++)
+		{
+			int first=i;
+			int last=p-first-1;
+		  for(int j=first;j<last;j++)
+		  {
+			  int temp=m[first][j];
+			  m[first][j]=m[last-j+first][first];
+			  m[last-j+first][first]=m[last][last-j+first];
+			  m[last][last-j+first]=m[j][last];
+			  m[j][last]=temp;
+			  
+		  }
+		}
+		for(int i=0;i<p;i++)
+			for(int j=0;j<p;j++)
+		System.out.println(m[i][j]);		
+	}
+
+6th version
+1.5
+public static boolean Isper(String s1,String s2)
+    {
+    	if((s1==null||s1.length()==0)&&(s2.length()==1||s2==null||s2.length()==0)||(s2==null||s2.length()==0)&&(s1.length()==1||s1==null||s1.length()==0))
+              return true;
+    	int diff=s1.length()-s2.length();
+    	int diff2=0;
+    	if(diff==0)
+    	{
+    		for(int i=0;i<s1.length();i++)
+    		{
+    			if(s1.charAt(i)!=s2.charAt(i))
+    				diff2++;
+    			if(diff2>=2)
+    				return false;
+    		}
+    		return true;
+    	}
+    	if(diff==1)
+    	{
+    		for(int i=0;i<s2.length();i++)
+    		{
+    			if(!s1.contains(String.valueOf(s2.charAt(i))))
+    				return false;
+    		}
+    		return true;
+    	}
+    	if(diff==-1)
+    	{
+    		for(int i=0;i<s1.length();i++)
+    		{
+    			if(!s2.contains(String.valueOf(s1.charAt(i))))
+    				return false;
+    		}
+    		return true;
+    	}
+    	return true;
+    }
+    
+1.6
+public static String Compress(String s)
+    {
+    	if(s==null||s.length()==0||s.length()==1)
+    		return s;
+    	String r="";
+    	r+=String.valueOf(s.charAt(0));
+    	int count=1;
+    	for(int i=0;i<s.length()-1;i++)
+    	{
+    		if(s.charAt(i)!=s.charAt(i+1))
+    		{
+    			r=r+count+String.valueOf(s.charAt(i+1));
+    			count=1;
+    		}
+    		else
+    			count++;
+    	}
+    	r=r+count;
+    	if(r.length()<s.length())
+    		return r;
+    	else
+    		return s;
+    }
