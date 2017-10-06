@@ -1,0 +1,15 @@
+chapter 1 extension in leetcode
+106  Construct Binary Tree from Inorder and Postorder Traversal
+134 gas station
+136 Given an array of integers, every element appears twice except for one. Find that single one.
+23,97,130 hard
+92 Reverse a linked list from position m to n. Do it in-place and in one-pass.
+51,
+110 balanced binary tree
+100,isSameTree
+17 Given a digit string, return all possible letter combinations that the number could represent.
+74 BinarySearch for 2D Matrix
+102 BinaryTree level order traversal
+34 search for a range,first appear,last appear
+104 maximum depth of binary tree
+88 merge sorted array in one of the array
