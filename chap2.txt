@@ -1,0 +1,211 @@
+chapter 2(version 6th)
+class ListNode
+{
+    int val;
+    ListNode next;
+    ListNode(int x)
+    {
+       val=x;
+    }
+}
+2.1
+void DeleteDup(ListNode head)
+{
+    if(head==null||head.next==null)
+      return head;
+    ListNode cur=head.next;
+    while(head!=null)
+    {
+       while(cur!=null)
+       {
+           if(cur.val!=head.val)
+             ListNode pre=cur;
+           if(cur.val==head.val)
+           {
+             pre.next=cur.next;
+           }
+           cur=cur.next;
+       }
+       head=head.next;
+    }
+}
+
+2.2
+ListNode FindKthListNode(ListNode head)
+{
+     if(head==0||head.next==null)
+       return head;
+     for(int i=0;i<k;i++)
+     {
+       if(head!=null)
+          head=head.next;
+        else
+          return null;
+     }
+     return head;
+}
+
+2.3
+seems easy. just delete the middle,you know
+
+2.4
+ListNode Partition(ListNode head, int partition)
+{
+   if(head==null||head.next==null)
+       return head;
+    ListNode greater=new ListNode(0);
+    ListNode dummy1=greater;
+    ListNode smaller=new ListNode(0);
+    ListNode dummy2=smaller;
+    while(head!=null)
+    {
+       if(head.val<partition)
+       {
+          smaller.next=new ListNode(head.val);
+          smaller=smaller.next;
+          }
+        else
+        {
+          greater.next=new ListNode(head.val);
+          greater=greater.next;
+          }
+        head=head.next;
+    }
+    smaller.next=dummy2.next;
+    greater.next=null;
+    return dummy1.next;
+}
+
+2.5
+ListNode Add(ListNode head1,ListNode head2)
+{
+    if(head1==null)
+       return head2;
+    else if(head2==null)
+       return head1;
+    ListNode result=new ListNode(0);
+    ListNode dummy=result;
+    result.next=Add2(head1,head2,0);
+    return dummy.next;
+}
+ListNode Add2(ListNode head1,ListNode head2,int carry)
+{
+    if(head1==null&&head2==null&&carry=0)
+       return null;
+    else if(head1==null)
+       return head2;
+    else if(head2==null)
+       return head1;
+    ListNode result=new ListNode(0);
+    if((head1.val+head2.val+carry)>=10)
+    {
+       result.val=(head1.val+head2.val+carry)%10;
+       carry=1;
+    }
+    else
+    {
+       result.val=head1.val+head2.val+carry;
+       carry=0;
+    }
+    result.next=Add2(head1.next,head2.next,carry);
+}
+
+2.6
+boolean isPalin(ListNode head)
+{
+    if(head==null||head.next==null)
+       return true;
+    ListNode dummy=new ListNode(0);
+    dummy.next=head;
+    int length=0;
+    while(head!=null)
+    {
+       length++;
+       head=head.next;
+    }
+    int[] a=new int[length];
+    for(int i=0;i<length;i++)
+    {
+        a[i]=dummy.next.val;
+        dummy=dummy.next;
+    }
+    for(int i=0;i<length/2;i++)
+    {
+         if(a[i]!=a[length-i-1])
+            return false;
+    }
+    return true;
+}
+
+2.7
+boolean isIntersect(ListNode head1, ListNode head2)
+{
+    int count1=0;
+    int count2=0;
+    if(head1==null&&head2!=null)
+       return false;
+    if(head2==null&&head1!=null)
+       return false;
+    if(head1==null&&head2==null)
+       return true;
+    ListNode dummy1=head1;
+    ListNode dummy2=head2;
+    while(head1!=null)
+    {
+        count1++;
+        head1=head1.next;
+    }
+     while(head2!=null)
+    {
+        count2++;
+        head2=head2.next;
+    }
+    if(head1!=head2)
+       return false;
+    else
+    {
+       int diff=Math.abs(count1-count2);
+       if(count1>=count2)
+       {
+          for(int i=0;i<diff;i++)
+            dummy1=dummy1.next;
+          while(dummy1!=dummy2)
+          {
+             dummy1=dummy1.next;
+             dummy2=dummy2.next;
+          }
+          return true;
+       }
+       else
+       for(int i=0;i<diff;i++)
+            dummy2=dummy2.next;
+          while(dummy1!=dummy2)
+          {
+             dummy1=dummy1.next;
+             dummy2=dummy2.next;
+          }
+          return true;
+    }
+}
+
+2.8
+ListNode CircleBegin(ListNode head)
+{
+   if(head==null||head.next==null||(head.val=head.next.val&&head,next.next==null)
+    return head;
+   ListNode cur=head;
+   ListNode front=head.next.next;
+   while(front!=null&&cur!=null)
+   {
+      if(cur.val!=front.val)
+      {
+         ListNode pre=cur;
+         cur=cur.next.next;
+         front=front.next;
+      }
+      else
+         return pre;
+   }
+   if(front==null||cur==null)
+     return null;
+}
