@@ -1,0 +1,309 @@
+chapter 3(version 4th)
+3.1
+class StackNode
+{
+  int cur;
+  int pre;
+  public StackNode(int pre,int cur)
+  {
+      this.cur=cur;
+      this.pre=pre;
+  }
+}
+
+int[] StackPointer={-1,-1,-1};
+int stacksize=300;
+StackNode[] buffer=new int[stacksize*3];
+int indexUsed=0;
+boolean isEmpty(int StackNum)
+{
+    return StackPointer[StackNum]==-1;
+}
+
+int peek(int stack)
+{
+    return buffer[stack].cur;
+}
+
+int pop(int StackNum)
+{
+    int value=buffer[StackPointer[StackNum]].cur;
+    int lastIndex=StackPointer[StackNum];
+    StackPointer[StackNum]=buffer[lastIndex].pre;
+    buffer[lastIndex]=null;
+    indexUsed--;
+    return value;
+}
+
+void push(int StackNum,int value)
+{
+     int lastIndex=StackPointer[StackNum];
+     StackPointer[StackNum]=indexUsed;
+     indexUsed++;
+     buffer[stackPointer[StackNum]]=new StackNode(lastIndex,value);
+}
+
+3.2
+public class StackMin extends Stack<Integer>
+{
+      Stack<Ingeter> s2;
+      public StackMin()
+      {
+         s2=new Integer();
+      }
+      
+      public void push(int value)
+      {
+         if(value<min())
+           s2.push(value);
+        super.push(value);
+      }
+      
+      public Integer pop()
+      {
+         int value=super.pop();
+         if(value==min())
+           s2.pop();
+         return value;
+      }
+      
+      public int min()
+      {
+         if(s2.isEmpty())
+            return Integer.MAX_VALUE;
+         else
+            return s2.peek();
+      }
+      
+}
+
+3.3
+public class SetOfStacks
+{
+   ArrayList<Stack> stacks=new ArrayList<Stack>();
+   public int capacity;
+   public SetOfStacks(int c)
+   {
+      capacity=c;
+   }
+   public Stack getLastStack()
+   {
+      if(stacks.size==0)
+        return null;
+      return stacks.get(stacks.size-1);
+   }
+   
+   public void push(int v)
+   {
+       stack last=getLastStack();
+       if(last!=null&&!last.isFull())
+       {
+          last.push(v);
+       }
+       else
+       {
+           stack s=new stack(capacity);
+           stack.push(v);
+           stacks.add(stack);
+       }
+   }
+   
+   public int pop()
+   {
+       stack last=getLastStack();
+       int v=last.pop();
+       if(last.size==0)
+          stacks.remove(stacks.size()-1);
+       return v;
+   }
+   
+   public int popAt(int index)
+   {
+        return leftshift(index,true);
+   }
+   
+   public int leftshift(int index,boolean removeTop)
+   {
+        Stack stack=stacks.get(index);
+        int remove_item;
+        if(removeTop)
+            remove_item=stack.pop();
+        else
+            remove_item=stack.removeBottom();
+        if(stack.isEmpty())
+            stacks.remove(index);
+        else if(stacks.size()>index+1)
+        {
+             int v=leftShift(index+1,false);
+             stack.push(v);
+        }
+        return remove_item;
+   }
+}
+public class stack
+{
+   Node bottom;
+   Node top;
+   private int capacity;
+   int size=0;
+   public stack(int c)
+   {
+     capacity=c;
+   }
+   
+   public boolean isFull()
+   {
+     return size==capacity;
+   }
+   
+   public void join(int above,int below)
+   {
+      if(above!=null)
+         above.below=below;
+      if(below!=null)
+         below.above=above;
+   }
+   
+   public boolean push(int v)
+   {
+      if(size>=capacity)
+        return false;
+      size++;
+      if(size==1)
+         bottom=v;
+      Node n=new Node(v);
+      join(n,top);
+      top=n;
+      return true;
+   }
+   
+   public int pop()
+   {
+      Node n=top;
+      top=top.below;
+      size--;
+      return t.value;
+   }
+   
+   public boolean isEmpty
+   {
+       return size==0;
+   }
+   
+   public int removeBottom()
+   {
+        Node b=bottom;
+        bottom=bottom.above;
+        if(bottom!=null)
+        bottom.below=null;
+        size--;
+        return b.value;
+   }
+}
+
+3.4
+import java.util.Stack;
+
+/* Represent a list of stuff, where all the "list" work is delegated
+ * to a naked recursive data structure. */
+
+public class SList {
+	public static void main(String[] args)
+	{
+       Tower[] tower=new Tower[5];
+       for(int i=0;i<3;i++)
+    	   tower[i] = new Tower(i);
+       for(int i=4;i>=0;i--)
+    	   tower[0].add(i);
+       tower[0].moveDisks(5, tower[2], tower[1]);
+}	
+	public static class Tower
+	{
+		private Stack<Integer> disks;
+		private int index;
+		public Tower(int i)
+		{
+			disks=new Stack<Integer>();
+			index=i;
+		}
+		public int index()
+		{
+			return index;
+		}
+		public void add(int d)
+		{
+			if(!disks.isEmpty()&&disks.peek()<=d)
+				System.out.println("Error!");
+			else
+				disks.push(d);
+		}
+		public void moveTopTo(Tower t)
+		{
+			int top=disks.pop();
+			t.add(top);
+			System.out.println("Move disk "+top+" from "+index()+" to "+t.index());
+		}
+	
+		public void moveDisks(int n,Tower d,Tower b)
+		{
+			if(n>0)
+			{
+				moveDisks(n-1,b,d);
+				moveTopTo(d);
+				b.moveDisks(n-1, d, this);
+			} 
+		}
+	}
+} 
+
+3.5
+public class MyQueue<T>
+{
+    Stack<T> s1,s2;
+    public MyQueue()
+    {
+      s1=new Stack<T>();
+      s2=new Stack<T>();
+    }
+    
+    public int size()
+    {
+       return s1.size()+s2.size();
+    }
+    
+    public void add(T value)
+    {
+       s1.push(value);
+    }
+    
+    public T peek()
+    {
+       if(!s2.empty())
+           return s2.peek();
+        while(!s1.empty())
+        s2.push(s1.pop());
+        return s2.peek;
+    }
+    public T remove()
+    {
+        if(!s2.empty)
+           return s2.pop();
+        while(!s1.empty())
+        s2.push(s1.pop());
+        return s2.pop();
+    }
+}
+
+3.6
+public static SortStack(Stack<Integer> s)
+{
+    Stack<Integer> s2=new Stack<Integer>();
+    while(!s.isEmpty())
+    {
+       int tmp=s.pop();
+       while(!s2.isEmpty()&&s2.peek()>tmp)
+       s.push(s2.pop());
+       s2.push(tmp);
+    }
+    return s2;
+}
