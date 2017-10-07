@@ -1,0 +1,23 @@
+leetcode for cc150-chapter2
+2.
+hard:25,41,126,72,30,45,65,76,
+9，Determine whether an integer is a palindrome. Do this without extra space.
+40,Given a collection of candidate numbers (C) and a target number (T), find all unique combinations in C where the candidate numbers sums to T
+8,String to Integer
+67,Given two binary strings, return their sum (also a binary string)
+3,Given a string, find the length of the longest substring without repeating characters.
+24,Given a linked list, swap every two adjacent nodes and return its head.
+71,Given an absolute path for a file (Unix-style), simplify it.
+5.Longest Palindromic Substring
+13,Roman to Int
+29,/ use -
+61,Given a list, rotate the list to the right by k places, where k is non-negative.
+101,Given a binary tree, check whether it is a mirror of itself (ie, symmetric around its center).
+20,Given a string containing just the characters '(', ')', '{', '}', '[' and ']', determine if the input string is valid.
+55,Given an array of non-negative integers, you are initially positioned at the first index of the array.
+Each element in the array represents your maximum jump length at that position.
+Determine if you are able to reach the last index.
+93.Given a string containing only digits, restore it by returning all possible valid IP address combinations.
+111,Given a binary tree, find its minimum depth.
+129,Sum Root to Leaf Numbers
+
