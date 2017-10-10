@@ -1,0 +1,517 @@
+chapter4
+tips:
+tries(prefix trees)
+each node represents a word. End with *
+shortest path:DFS
+DFS(recursion):
+void search(Node root)
+{
+  if(root==null)
+     return;
+   visit(root);
+   root.visited=true;
+   for each(Node n in root.adjacent)
+   if(n.visited==false)
+       search(n);
+}
+BFS(not recursion)
+void search(Node root)
+{
+    Queue queue=new queue();
+    root.marked=true;
+    queue.enqueue(root);
+    while(!queue.isEmpty())
+    {
+      Node r=queue.dequeue();
+      visit(r);
+      foreach(Node n in root.adjacent)
+      {
+        if(n.marked==false)
+        {
+           n.marked=true;
+           queue.enqueue(n);
+        }
+      }
+    }
+}
+
+4.1
+find if there is a path between start and end.
+enum State
+{
+  univisited, visited,visiting;
+}
+public boolean FindPath(Graph g,Node start, Node end)
+{
+   if(start==end)
+       return true;
+    LinkedList <Node> p=new LinkedList<Node>();
+    for(Node u:g.getNodes())
+       u.state=unvisited;
+    start.state=State.visiting;
+    q.add(start);
+    while(!q.isEmpty())
+    {
+       u=q.dequeue();
+       if(u!=null)
+       {
+        for(node v:u.getAdjacent())
+        {
+           if(v.state==State.unvisited)
+           {
+             if(v==end)
+               return true;
+            else
+            {
+               v.state=State.visiting;
+               q.add(v);
+            }
+           }
+        }
+        u.state=State.visited;
+       }
+    }
+    return false;
+}
+
+4.2
+according to a sorted array to create a binary tree
+TreeNode create(int[] arr)
+{
+   return create2(arr,0,arr.length-1);
+}
+
+TreeNode create2(int[] arr, int start,int end)
+{
+  if(start>end)
+     return null;
+   int mid=(start+end)/2;
+   TreeNode n=new TreeNode(arr[mid]);
+   n.left=create2(arr,start,mid-1);
+   n.right=create2(arr,mid+1,end);
+   return n;
+}
+
+4.3
+according to a binary tree,create a linked list of all the nodes at each depth
+void create(TreeNode root, ArrayList<LinkedList<TreeNode>> lists,int level)
+{
+   if(root==null)
+      return;
+   LinkedList<TreeNode> list=null;
+   if(lists.size()==level)
+   {
+      list=new LinkedList<TreeNode>();
+      lists.add(list);
+    }
+    else
+      list=lists.get(level);
+    list.add(root);
+    create(root.left,lists,level+1);
+    create(root.right,lists,level+1);
+}
+
+ArrayList<LinkedList<TreeNode>> create2(TreeNode root)
+{
+     ArrayList<LinkedList<TreeNode>> lists;
+     create(root,lists,0);
+     return lists;
+}
+
+4.4
+check if a binary tree is balanced.
+boolean isBalanced(TreeNode root)
+{
+      if(root==null)
+        return true;
+       if(Math.abs(Depth(root.left)-Depth(root.right))>1)
+         return false;
+        else
+         return isBalanced(root.left)&&isBalanced(root.right);
+}
+
+private int Depth(TreeNode root)
+{
+     if(root==null)
+        return 0;
+    else return Math.Max(Depth(root.left),Depth(root.right))+1;
+}
+(or break as soon as the unbalanced section be found)
+
+4.5
+check if a binary tree or not
+(copy the tree to an array)
+int index=0;
+void copyBST(TreeNode root,int[] arr)
+{
+   if(root==null)
+     return;
+    copyBST(root.left,arr);
+    arr[index]=root.val;
+    index++;
+    copyBST(root.right,arr);
+}
+
+boolean isBST(TreeNode root)
+{
+    int[] arr=new int[root.size];
+    copyBST(root,arr);
+    for(int i=1;i<arr.length;i++)
+    {
+       if(a[i]<=a[i-1]
+          return false;
+    }
+    return true;
+}
+
+//recursive
+boolean isBST(TreeNode root)
+{
+   return isBST(root,null,null);
+}
+
+boolean isBST(TreeNode root,int min ,int max)
+{
+   if(root==null)
+     return true;
+    if(min!=null&&root.val<min||max!=null&&root.val>max)
+     return false;
+     if(!isBST(root.left,null,root.val)||!isBST(root.right,root.val,null))
+     return false;
+     return true;
+     
+}
+4.6
+write an algorithm to find the "next" node(i.e. in-order successor)
+of a given node in a BST.
+TreeNode leftMostChild(TreeNode root)
+{
+   if(n==null)
+     return null;
+   while(n.left!=null)
+   {
+      n=n.left;
+   }
+   return n;
+}
+TreeNode inorderSucc(TreeNode root)
+{
+   if(root==null)
+      return null;
+    if(n.right!=null)
+      return leftMostChild(n.right);
+    else
+    {
+       TreeNode q=n;
+       TreeNode x=q.parent;
+       while(x!=null&&x.left!=q)
+       {
+          q=x;
+          x=x.parent;
+       }
+       return x;
+    }
+}
+
+4.7
+Stack<Project> find(String[] projects,String[][] depen)
+{
+   Graph g=buildGraph(projects,depen);
+   return orderProjects(graph.getNodes());
+}
+
+Stack<Project> orderProjects(ArrayList<Project> projects)
+{
+    Stack<Project> stack;
+    for(Project project:projects)
+    {
+       if(project.getState==Project.State.Blank)
+       {
+          if(!doDFS(project,stack))
+             return null;
+       }
+    }
+    return stack;
+}
+
+boolean doDFS(Project project,Stack<Project> stack)
+{
+   if(project.getState()==Project.State.PARTIAL)
+     return false;
+   if(project.getState()==Project.State.BLANK)
+   {
+      project.setState(Project.State.PARTIAL);
+      ArrayList<Project> children=project.getChildren();
+      for(Project child:children)
+      {
+        if(!doDFS(child,stack))
+             return false;
+      }
+      project.setState(Project.State.COMPLETE);
+      stack.push(project);
+   }
+}
+
+public class Project
+{
+   public enum State{COMPLETE,PARTIAL,BLANK};
+   private State state=State.BLANK;
+   public State state=State.BLANK;
+   public State getState()
+   {
+      return state;
+   }
+   public void setState(State st)
+    {
+       state=st;
+    }
+}
+
+Graph buildGraph(String[] projects,String[][] depen)
+{
+  Graph g;
+  for(String project:projects)_
+  {
+    g.createNode(project);
+  }
+  for(String[] dependency:dependencies)
+  {
+    String first=dependency[0];
+    String second=dependency[1];
+    g.addEdge(first,second);
+  }
+  return g;
+}
+
+public class Graph
+{
+   private ArrayList<Project> nodes;
+   private HashMap<String,Project> map;
+   
+   public Project get(String name)
+   {
+     if(!map.containsKey(name))
+     {
+        Project node=new Project(name);
+        nodes.add(node);
+        map.put(name,node);
+     }
+     return map.get(name);
+   }
+   
+   public void addEdge(String start,String end)
+   {
+      Project start2=get(start);
+      Project end2=get(end);
+      start2.addN(end);
+   }
+   
+   public ArrayList<Project> getNodes()
+   {
+       return nodes;
+   }
+}
+
+class Project
+{
+   private ArrayList<Project> children;
+   private HashMap<String,Project> map;
+   private String name;
+   public  int dependencies=0;
+   
+   public Project(String n)
+   {
+     name=n;
+   }
+   
+   public void addN(Project node)
+   {
+      if(!map.containsKey(node.getName()))
+      {
+         children.add(node);
+         map.put(node.getName(),node);
+         dependencies++;
+      }
+   }
+}
+
+4.8
+to a binary tree, find two nodes' common ancestor. if they are on the same side.
+TreeNode find(TreeNode root, TreeNode t1,TreeNode t2)
+{
+    if(!covers(root,t1)||!covers(root,t2))
+       return null;
+    return find2(root,t1,t2);
+}
+
+boolean covers(TreeNode root,TreeNode t)
+{
+  if(root==null)
+     return false;
+  if(root==t)
+     return true;
+   return covers(root.left,t)||covers(root.left,t);
+}
+
+TreeNode find2(TreeNode root, TreeNode t1,TreeNode t2)
+{
+  if(root==null|||root==t1||root==t2)
+     return root;
+  boolean isLeft1=covers(root.left,t1);
+  boolean isLeft2=covers(root.left.t2);
+  if(isLeft1!=isLeft2)
+     return root;
+  TreeNode child=isLeft1?root.left:root.right;
+  return find2(child,t1,t2);
+}
+
+4.9
+BST sequences.
+ArrayList<LinkedList<Integer>> allS(TreeNode node)
+{
+    ArrayList<LinkedList<Integer>> re=new ArrayList<LinkedList<Integer>>();
+    if(node==null){
+      re.add(new LinkedList<Integer>());
+    return re;}
+    LinkedList<Integer> prefix=new LinkedList<Integer>();
+    prefix.add(node.data);
+    
+    ArrayList<LinkedList<Integer>> leftS=allS(root.left);
+    ArrayList<LinkedList<Integer>> rightS=allS(root.right);
+    
+    for(LinkedList<Integer>left:leftS)
+       for(LinkedList<Integer>right:rightS
+       {
+        ArrayList<LinkedList<Integer>> weaved=new ArrayList<LinkedList<Integer>>();
+        weaveLists(left,right,weaved,profix);
+        result.addAll(weaved);
+        }
+        return re;
+}
+
+void weaveLists(ArrayList<LinkedList<Integer>> first,ArrayList<LinkedList<Integer>> second,
+ArrayList<LinkedList<Integer>> results,LinkedList<Integer> prefix)
+{
+    if(first.size()==0||second.size()==0)
+    {
+      LinkedList<Integer> re=(LinkedList<Integer>)prefix.clone();
+      results.addAll(first);
+      results.addAll(second);
+      return;
+      }
+      
+      int headFirst=first.removeFirst();
+      prefix.addLast(headFirst);
+      weaveLists(first,second,results,prefix);
+      prefix.removeLast();
+      first.addFirst(headFirst);
+      
+      int secondFirst=first.removeFirst();
+      prefix.addLast(secondFirst);
+      weaveLists(first,second,results,prefix);
+      prefix.removeLast();
+      second.addFirst(headFirst);
+    }
+}
+
+4.10
+found subtree
+boolean containsTree(TreeNode t1,TreeNode t2)
+{
+  StringBuilder s1=new StringBuilder();
+  StringBuilder s2=new StringBuilder();
+  
+  getOrderString(t1,s1);
+  getOrderString(t2,s2);
+  
+  return string.indexOf(string2.toString())!=-1;
+}
+
+void getOrderString(TreeNode node,StringBuilder sb)
+{
+   if(node==null)
+   {
+     sb.append("X");
+     return;
+     }
+     sb.append(node.data+" ");
+     getOrderString(node.left,sb);
+     getOrderString(node.right,sb);
+   }
+}
+
+4.11
+insert,find,delete and getRandomNode()
+class TreeNode
+{
+  TreeNode find(int d)
+  {
+     if(d==data)
+       return this;
+     else if(d<data)
+       return left!=null?left.find(d):null;
+     else
+        return right!=null?right.find(d):null;
+  }
+  
+  void insertNode(int d)
+  {
+     if(d<=data)
+     {
+       if(left==null)
+         left=new TreeNode(d);
+         else
+          left.insertNode(d);
+        if(right==null)
+         right=new TreeNode(d);
+         else
+          right.insertNode(d);
+         size++;
+     }
+  }
+  
+  TreeNode getRandomed()
+  {
+    int LeftSize=left==null?0:left.size();
+    Random r=new Random();
+    int index=r.nextInt(size);
+    if(index<LeftSize)
+    {
+        return left.getRandomed();
+    }
+    else if(index==LeftSize)
+       return this;
+    else
+       return right.getRandomed();
+  }
+}
+
+4.12
+find targetSum path in binary tree
+int countPath(TreeNode root,int target)
+{
+  return countPath(root,target,0,new HashMap<Integer,Integer>());
+}
+
+int countPath(TreeNode node,int target,int runningSum,HashMap<Integer,Integer>pathCount)
+{
+   runningSum+=node.data;
+   int sum=runningSum-target;
+   int total=pathCount.getOrDefault(sum,0);
+   if(runningSum==target)
+      total++;
+    increHash(pathCount,runningSum,1);
+    total+=countPath(node.left,target,runningSum,pathCount);
+    total+=countPath(node.right,target,runningSum,pathCount);
+    
+    return total;
+}
+
+void increHash(HashMap<Integer,Integer>hash,int key,int delta)
+{
+   int newCount=hash.getOrDefault(key,0)+delta;
+   if(newCount==0)
+     hash.remove(key);
+     else
+     hash.put(key,newCount);
+}
