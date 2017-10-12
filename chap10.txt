@@ -1,0 +1,281 @@
+chapter10
+10.1
+Merge B into A
+void merge(int[] a,int[] b)
+{
+   int i=a.length-b.length;
+   int j=b.length-1;
+   int k=a.length-1;
+   while(i!=0&&j!=0)
+   {
+     if(a[i]>=b[j])
+     {
+       a[k]=a[i];
+       i--;
+     }
+     else
+     {
+        a[k]=b[j];
+        j--;
+     }
+     k--;
+   }
+   if(i==0)
+     System.arraycopy(0,j,b,0,k,a);
+   else
+     System.arraycopy(0,i,a,0,k,a);
+}
+
+10.2
+
+
+10.3
+rotated an increasing array,find the index of the number
+static int btos(int[] x,int start,int end,int target)
+	{
+		int index;
+		if(start==end)
+			return start;
+		if(x[start]==target)
+			return start;
+		else if(x[end]==target)
+			return end;
+		int mid=(start+end)/2;
+		if(x[mid]==target)
+			return mid;
+		if(target>x[mid]&&target<x[end])
+				return btos(x,mid+1,end,target);
+		else
+			return btos(x,start,mid-1,target);
+		
+	}
+
+10.4 so easy...just traverse!	
+10.5 binary search with string
+10.6
+20GB sort file
+break into small files,sort the small files and merge.
+10.7
+1 billion non-negative integers,find one not in the file
+10MB memory(2^23)
+use integer(4^8bit) value as offset
+int findOpenNumber(String filename) throws FileNotFoundException
+{
+  int rangeSize=(1<<20);
+  int[] blocks=getCountPerBlock(filename,rangeSize);
+  int blockIndex=findBlockWithMissing(blocks,rangeSize);
+  if(blockIndex<0)
+     return -1;
+  byte[] bitVector=getBitVectorForRange(filename,blockIndex,rangeSize);
+  int offset=findZero(bitVector);
+  if(offset<0)
+    return -1;
+  return blockIndex*rangeSize+offset;
+}
+
+int getCountPerBlock(String filename,int rangeSize)
+{
+  int arraySize=Integer.MAX_VALE;
+  int[] blocks=new int[arraySize];
+  Scanner in=new Scanner(new FileReader(filename));
+  while(in.hasNextInt())
+  {
+    int value=in.nextInt();
+    blocks[value/rangeSize]++;
+  }
+  in.close();
+  return blocks;
+}
+
+int findBlockWithMissing(int[] bolcks,int rangeSize)
+{
+  for(int i=0;i<rangeSize;i++)
+  {
+    if(blocks[i]<rangeSize)
+      return i;
+      }
+      return -1;
+  }
+}
+
+byte[] getBitVectorForRange(String filename,int blockIndex,int rangeSize)
+{
+  int startRange=blockIndex*rangeSize;
+  int endRange=startRange+rangeSize;
+  byte[] bitVector=new byte[rangeSize/BYTE.SIZE];
+  Scanner in=new Scanner(new FileReader(filename));
+  while(in.hasNextInt())
+  {
+    int value=in.nextInt();
+    if(startRange<=value&&value<endRange)
+    {
+      int offset=value-startRange;
+      int mask=(1<<(offset%Byte.SIZE));
+      bitVector[offset/Byte.SIZE]|=mask;	
+    }
+  }
+  in.close();
+  return bitVector;
+}
+
+int findZero(byte b)
+{
+  for(int i=0;i<Byte.SIZE;i++)
+  {
+    int mask=1<<i;
+    if((b&&mask)==0)
+      return i;
+  }
+  return -1;
+}
+
+int findZero(byte[] bitVector)
+{
+  for(int i=0;i<bitVector.length;i++)
+  {
+   if(bitVector[i]!=~0)
+   {
+     int bitindex=findZero(bitVector[i]);
+     return i*Byte.SIZE+bitIndex;
+   }
+  }
+  return -1;
+}
+
+10.8
+find duplicate from(1-32000)
+bit vector
+void checkDup(int[] arr)
+{
+  Bitset bs=new BitSet(32000);
+  for(int i=0;i<arr.length;i++)
+  {
+   int num=arr[i];
+   int num0=num-1;
+   if(bs.get(num0))
+      System.out.println(num);
+    else
+       bs.set(num0);
+  }
+}
+
+class BitSet
+{
+  int[] bitset;
+  
+  public BitSet(int size)
+  {
+    bitset=new int[(i>>5)+1];
+  }
+  
+  boolean get(int pos)
+  {
+    int base=pos>>5;
+    int offset=pos&0x1f;
+    return ((bitset[base])&(1<<offset))!=0;
+  }
+  
+  void set(int pos)
+  {
+    int base=pos>>5;
+    int offset=pos&0x1f;
+    bitset[base]|=1<<offset;
+  }
+}
+10.9
+static boolean btos(int[][] x,int target)
+	{
+		int row=0;
+		int col=x[0].length-1;
+		while(row<x.length&&col>=0)
+		{
+			if(x[row][col]==target)
+				return true;
+			else if(x[row][col]>target)
+				col--;
+			else
+				row++;
+		}
+		return false;
+	}
+	
+10.10
+find the number of numbers no greater than x.
+RankNode root=null;
+void track(int number)
+{
+  if(root==null)
+    root=new RankNode(number);
+  else
+    root.insert(number);
+}
+
+int getRankOfNumber(int number)
+{
+  return root.getRank(number);
+}
+
+public class RankNode
+{
+  int left_size=0;
+  RankNode left,right;
+  int data=0;
+  public RankNode(int d)
+  {
+    data=d;
+  }
+  
+  public void insert(int d)
+  {
+    if(data>=d){
+    if(left!=null)
+      left.insert(d);
+      else
+      left=new RankNode(d);
+      left_size++;
+      }
+      else
+      {
+       if(right!=null)
+         right.insert(d);
+         else
+         right=new RankNode(d);
+      }    
+  }
+
+public int getRank(int d)
+{
+  if(d==data)
+    return left_size;
+ else if(d<data)
+    {
+      if(left==null) return -1;
+      else return left.getRank(d);
+    }
+    else
+    {
+    int right_rank=right==null?-1:right.getRank(d);
+    if(right_rank==-1)
+      return -1;
+    else
+    return left_size+1+right_rank;
+    }
+}
+
+10.11
+sort array into peak&valley
+void valleyAndPeek(int[] x)
+{
+  if(x.length<5)
+  {
+     System.out.println("Error!");
+     return;
+     }
+     
+  for(int i=1;i<x.length;i+=2)
+     swap(x,i-1,i);
+  return;
+}
+
+10.12
+
