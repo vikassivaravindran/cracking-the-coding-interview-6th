@@ -1,0 +1,66 @@
+chapter 6
+6.1
+1-20 bottles pills,only 1 1.1g,other 1g,use scale once,find the 1.1g
+1 pill from 1,2 from 2,3 from 3,....
+weight them (1+2+3....+20)+extra
+then you can find
+
+6.2
+Game1:p
+Game2:
+p*p*p+3pp(1-p)=3p^2-2p^3
+p[0.5,1],Game2
+else  Game1
+
+6.4
+3 ants in the side of triangle, the probability they meet 
+1-2*(1/2)^3=3/4
+n-angle:
+1-(1/2)^(n-1)
+
+6.7
+一直生小孩直到有女孩为止
+double runNFamilies(int n)
+{
+   int boys=0;
+   int girls=0;
+   for(int i=0;i<n;i++)
+   {
+     int[] genders=runOneFamily();
+     girls+=genders[0];
+     boys+=gender[1];
+   }
+   return grils/(girls+boys);
+}
+
+int[] runOneFamily()
+{
+   Random r=new Random();
+   int boys=0;
+   int girls=0;
+   while(girls==0)
+   {
+     if(r.nextBoolean())
+       girls++;
+     else
+        boys++;
+   }
+   int[] genders={girls,boys};
+   return genders;
+}
+
+6.8
+假设你们面前有一栋N层高的楼和许多鸡蛋，同时假设将鸡蛋从F层或者更高层扔下，鸡蛋才会被摔碎，为此，请在尽量少的摔坏鸡蛋的基础上找出F的大小。
+x+x-1+x-2+...+0=x(x+1)/2>=N
+
+6.9
+100 lockers
+每把锁被自己的因子打开关上，只有平方数打开不关
+0-100平方数，10个，10把锁打开。
+
+6.10
+1000 bottles 1 posion 10 test tools 7days turn results.
+1. 分成10*100，7days，8，再分，28天
+2.百位，个位，十位
+3.bit 1024=2^10,确定每一位。
+
