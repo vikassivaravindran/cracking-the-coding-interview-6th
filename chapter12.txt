@@ -1,0 +1,175 @@
+12 
+C&C++
+c++
+default is private, should state public first
+class {};
+class A: public B
+Class *a=new Class();
+p->method();
+delete p;
+constructor&destructor(~class()),no ;
+virtual before method （子类可重载方法）/父类方法无法定义
+reference & pointers
+const int &b=12;
+//allocate memory to store 12 and makes b a reference to this piece of memory.
+diff:
+references cannot be null and reassigned to another piece of memory.
+int *p=new int[2];
+p[0]=0;
+p[1]=1;
+p++;
+cout<<*p;
+output:1
+template
+
+12.1
+void printLastLines(char *fileName,int k)
+{
+  ifstream file(fileName);
+  string L[k];
+  int size=0;
+  while(file.peek()!=EOF)
+  {
+    getline(file,L[size%k]);
+    size++;
+  }
+  
+  int start=size?k?(size%k):0;
+  int count=min(k,size);
+  for(int i=0;i<count;i++)
+   cout<<L[(start+i)%k]<<endl;
+}
+
+12.2
+void reverse(char *str)
+{
+  char* end=str;
+  char tmp;
+  if(str)
+  {
+    while(*end)
+      ++end;
+  }
+  --end;
+  while(str<end)
+  {
+    tmp=*str;
+    *str++=*end;
+    *end--=tmp;
+  }
+}
+
+12.3
+hash table & STL map
+STL map:
+binary search tree,no need to handle collisions, the tree is balanced,
+the insert& lookup time logN
+HashTable: an array of linked-list,collisions(chaining with a linked list)
+
+12.4
+virtual functions work in c++
+vf depends on a "vtable" or "VirtualTable".
+when a function is declared to be virtual, a vtable is constructed which stores
+address of the virtual functions of this class. The compiler  also adds a hidden
+vptr variable in all such classes which points to the vtable of the class. If a virtual
+function is not overridden in the derived class, the vtable of the derived class stores
+the address of the function in its parent class. The vtable is used to resolve the address
+of the function when the vf is called.
+
+12.5
+shallow copy and deep copy
+just value&value+all pointers
+void deep_copy(test &src,test &dest)
+{
+  dest.ptr=(char*)malloc(strlen(src.ptr)+1);
+  strcpy(dest.ptr,src.ptr);
+}
+
+12.6
+volatile C
+informs the compiler that the value of variable it is applied to can change from
+outside,without any update done by the code.This may be done by OS, hardware and another thread.
+The compiler will reload the value each time from memory.
+declare:
+int volatile x;/volatile int x;
+change from outside to stop bugs
+when multi-threaded programs have global variables and any thread can modify these shared variables.
+
+12.7
+a destructor in base class need to be declared virtual.
+
+12.8
+a method to take a pointer in and return complete copy of the passed in data structure.
+typedef map<Node*,Node*> NodeMap;//typedef,rename the primitive type
+Node *copy(Node *cur,NodeMap &nodeMap)
+{
+   if(cur==null)
+      return null;
+    NodeMap::iterator i=NodeMap.find(cur);
+    if(i!=nodeMap.end())
+       return i->second;
+    Node *node=new Node;
+    nodeMap[cur]=node;
+    node->ptr1=copy(cur->ptr1,nodeMap);
+    node->ptr2=copy(cur->ptr2,nodeMap);
+    return node;
+}
+
+Node *copy_structure(Node *root)
+{
+  NodeMap nodeMap;
+  return copy(root,nodeMap);
+}
+
+12.10
+align_malloc(1000,128)
+should return multiple of 128 reprensents 1000
+void* malloc(size_t required_bytes,size_t alignment)
+{
+  void* p1;
+  void* p2;
+  int offset=alignment-1+sizeof(void*);
+  if((p1=(void*)(required_bytes+offset))==null)
+     return null;
+     p2=(void*)((size_t)(p1)+offset)&~(alignment-1));
+     ((void**)p2)[-1]=p1;
+     return p2;
+}
+void free(void *p2)
+{
+  void* p1=((void**)p2)[-1];
+  free(p1);
+}
+
+12.11
+2D alloc
+int** myalloc(int row,int col)
+{
+  int i;
+  int header=row*sizeof(int*);
+  int data=row*col*sizeof(int);
+  int** rowptr=(int**)malloc(header+data);
+  if(rowprt==null)
+    return null;
+  int* buf=(int*)(rowptr+row);
+  for(int i=0;i<row;i++)
+   rowprt[i]=buf+i*col;
+  return rowprt;
+}
+
+void free2d(int **rowptr,int row)
+{
+  for(int i=0;i<row;i++)
+    free(rowptr[i]);
+   free(rowptr);
+}
+
+int** my(int row,int col)
+{
+  int** rowptr;
+  int i;
+  rowptr=(int**)malloc(row*sizeof(int*));
+  for(int i=0;i<row;i++)
+   rowptr[i]=(int*)malloc(col*sizeof(int));
+   return rowptr;
+}
