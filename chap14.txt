@@ -1,0 +1,105 @@
+chap14 database
+explicit join:(better)
+select coursename,teachername
+from courses inner join teachers
+on courses.teacherID=teachers.teacherID
+
+implicit join:
+select coursename,teachername
+from courses,teachers
+where courses.teacherID=teachers.teacherID
+
+normalized & denormalized
+N: to minimize redundancy
+D: to optimize read time(will repeat often)
+used to create highly scalable systems.
+
+left join:avoid left empty
+course:courseID,courseName,TeacherID
+teacher:teacherID,teacherName
+students:studentID,studentName
+studentCourses:courseID,studentID
+
+get a list of all teachers and how many students
+they each to teach.
+
+select teacherName, isnull(StudentSize.Number,0)
+from teachers left join
+(select teacherID,count(studentCourses.courseID)as [Number]
+from course inner join studentCourses
+on course.courseID=studentCourses.courseID
+group by course.teacherID) studentsize
+on teacher.teacherID=studentsize.teacherID
+group by studentsize.number desc
+
+small database design
+1.handle ambiguity
+2.define the core objects
+3.analyze relationships
+4.investigate actions
+
+14.1
+select TenantName
+from Tenants
+inner join
+(select TenantID from AptTenants
+group by TenantID having count(*)>1) C
+on Tenants.TenantID=C.TenantID
+
+14.2
+select buildingname,isnull(count,0) as 'count'
+from buildings
+left join
+(select apartments.buildingID,count(*) as 'count'
+from requests inner join apartments
+on request.aptID=apartment.aptID
+where request.status='open'
+group by apartments.buildingID
+) reqcounts
+on reqcounts.buildingID=buildings.buildingID
+
+14.3
+update requests
+set status='closed'
+where aptID in(select aptID from apartments where buildingID=11)
+
+14.4
+types of join and uses
+inner join:
+the result set would contain only the data where the criteria match.
+outer join(usually contains inner join):
+left outer join(left join):
+left table records will be all included.
+right outer join(right join)
+full outer join(left+right)
+
+14.5
+denormalization,pros and cons
+cons                                    profs
+updates and inserts more expensive      retrieving data is faster
+make update and insert harder to writer  retrieve simpler,less likely to bugs,look at fewer tables
+data inconsistent
+redundancy needs more storage.
+
+14.6
+E-R diagram
+方格（对象），圆（对象的属性），菱形（关系）
+
+14.7
+student:name,id,address
+course:name,id,professorID
+courseEnrollment:studentID,courseID,term,grade
+
+declare @GPA2 float;
+set @GPA2=(select min(GPA) as 'GPAmin' from(
+select top 10 percent avg(courseEnrollment.grade) as GPA
+from courseEnrollment
+group by courseEnrollment.studentID)
+group by GPA desc) grades);
+
+select studentname, GPA
+from (select avg(courseEnrollment.grade) as GPA,courseEnrollment.studentID
+from courseEnrollment
+group by courseEnrollment.studentID
+having avg(courseEnrollment.grade)>=@GPA2)Honors
+inner join students Honors.studentID=student.studentID
