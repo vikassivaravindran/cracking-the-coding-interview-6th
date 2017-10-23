@@ -1,0 +1,85 @@
+13
+overloading&overriding
+overloading:
+rewrite the function with the same name
+overriding:
+rewrite the function inherit from the super class
+
+collection framework
+arraylist,vector,linkedlist,HashMap
+
+13.1
+private constructor,in terms of inheritance
+A's innner class or A is inner class of B,B's other inner classes can.
+A can only be inherited by its own or its parent's inner classes.
+
+13.2
+final,finally,finalize(garbage collector)
+final:
+reference:cannot point to any other project on the heap.
+method:cannot be overridden
+class:cannot be subclassed.
+
+13.4
+java&c++ templates
+1.c++ can use primitive types, but java can't
+2.java can restrict the template's type parameters to be of a certain type.
+3.c++,the type parameter can be instantiated but java does not support this.
+4.In java, the type parameter cannot be used for static methods and variables, since these
+would be shared.In c++, these classes are different, so it can.
+5.In java, all instances of class, regardless of their type paramaters,
+are the same type.The type parameters are erased at runtime.
+In c++,instances with different type parameters are different types.
+
+13.5
+TreeMap,HashMap,LinkedHashMap
+HashMap:
+the order of the keys is essentially arbitrary. it's implemented by an array of linked lists.
+
+TreeMap:
+o(logN) time to look up and insert.
+the order is sorted.
+keys must implement the Comparable interface.
+TreeMap is implemented by a red-black tree.
+
+LinkedHashMap:
+Keys are ordered by their insertion order.
+it is implemented by doubly-linked buckets.
+{1,-1,0}
+traverse:
+void traverse(AbstractMap<Integer,String> map)
+{
+  int[] arr={1,-1,0};
+  for(int x:array)
+  {
+    map.put(x,Integer.toString(x));
+  }
+  for(int k:map.keySet())
+   System.out.print(k+",");
+}
+HM:arbirary.
+LM:{1,-1,0}
+TM:{-1,1,0}
+
+13.6
+object reflection in java & why it is useful
+1.getting information about the method and fields present inside the class at runtime
+2.creating a new instance of a class
+3.getting and setting the object fields directly by getting field reference,regardless of 
+what the access the modifier is.
+
+useful reasons:
+1.help observe or manipulate the runtime.
+2.help debug or test programs,as it can help us get direct access to methods,constructors and fields.
+3.call methods by name when you don't know the method in advance.
+
+13.7
+int getPopulation(List<Country> countries, String continent)
+{
+   for(int i=0;i<countries.size();i++)
+   {
+     if(continent.equalsto(countries.get(i).continet)
+       return contries.get(i).getPopulation();   
+   }
+   return 0;
+}
