@@ -1,0 +1,123 @@
+version 4 chap17
+networking
+OSI 7 layer model
+7: application layer
+6:presentation layer
+5:session layer
+4:transport layer
+3:network layer
+2:data link layer
+1:physical layer
+each layer provides services to the layer above it and receives services from the
+layer below it.
+
+17.1
+step by step, after type a URL into a browser, what happens.
+1. Browser contacts the DNS(domain name server) server to find the IP address of URL.
+2.DNS returns back the IP address of the site.
+3.Browser opens TCP connection to the web server at port 80.
+4.Browser fetches the html code of the page requested.
+5.Browser renders the HTML in the display window.
+6.Browser terminates the connection when window is closed.
+
+17.2
+BGP(border gateway protocol):
+when a BGP router first comes up on the Internet, either for the first time or
+after being turned off, it establishes connections with the other BGP
+routers with which it directly communicates. The first thing it does is download
+the entire routing table of each neighbouring router. After that it only exchanges
+much shorter update messages with other routers.
+
+RIP(routing information protocol):
+RIP provides the standard IGP protocol for local area networks and provides great\
+network stability, guaranteeing that if one network connection goes down the network
+can quickly adapt to send packets through another connection.
+(the routing database inside makes it work)
+
+OSPF(open shortest path first):
+OSPF is a particularly efficient IGP routing protocol that is faster than RIP, but also
+more complex.
+
+The main difference is that RIP stores fastest path but OSPF keeps track of a complete
+topological database of all connections in the local network.(startup-update-shortest path tree)
+
+17.3
+IPv4 and IPv6
+v4 uses 32 bit address, however v6 128 bit.
+v4:ABCDE
+ABC used on IP networks in common practice.
+D:multicast.
+E:reserved by some research organizations for experimental purposes.(e.g.255.255.255.255.0)
+
+v6(3):
+unicast addresses,multicast addresses, anycast addresses
+(e.g.:2001:cdba:0000:0000(8 times))
+
+v6 advantage:
+increased address space,more efficient routing,reduced management requirement,
+improved methods to change ISP,better mobility support, multi-homing,
+security, scoped address(link-local,site-local, global-address space)
+
+17.4
+network/subnet mask, the communication between hostA and hostB
+A mask is a bit pattern used to identify the network/subnet address.
+The IP address consists of the network address and host address.
+A network administration can divide any network into sub-networks by using
+subnet work.
+When A&B are on same network: the host address bits are used to identify the 
+host within the network.
+When both are different:
+the router uses the network mask to identify the network and route the packet. The host
+can be identified using the network host address.
+
+17.5
+difference between TCP&UDP?(ACK, flow control,congestion control)
+TCP(transmission control protocol):
+1.Reliable - when you send a message along a TCP socket, you know it will get there unless 
+the connection fails completely. If it gets lost along the way, the server will re-request 
+the lost part. This means complete integrity; data will not get corrupted.
+2.Ordered - if you send two messages along a connection, one after the other, you know 
+the first message will get there first. You don’t have to worry about data arriving in 
+the wrong order.
+3.Heavyweight - when the low level parts of the TCP “stream” arrive in the wrong order, 
+re- send requests have to be sent. All the out of sequence parts must be put back together,
+ which requires a bit of work.
+ 
+UDP(User datagram protocol):
+1.Unreliable - When you send a message, you don’t know if it’ll get there; it could get 
+lost on the way.
+2.Not ordered - If you send two messages out, you don’t know what order they’ll arrive in.
+3.Lightweight - No ordering of messages, no tracking connections, etc. It’s just fire and 
+forget! This means it’s a lot quicker, and the network card / OS have to do very little 
+work to translate the data back from the packets.
+
+Explain how TCP handles reliable delivery (explain ACK mechanism), flow control (explain TCP sender’s/receiver’s window).
+For each TCP packet, the receiver of a packet must acknowledge that the packet is received.
+ If there is no acknowledgement, the packet is sent again. These guarantee that every 
+ single packet is delivered. ACK is a packet used in TCP to acknowledge receipt of a 
+ packet. A TCP window is the amount of outstanding (unacknowledged by the recipient) 
+ data a sender can send on a particular connection before it gets an acknowledgment 
+ back from the receiver that it has gotten some of it.
+For example, if a pair of hosts are talking over a TCP connection that has a TCP window
+with a size of 64 KB, the sender can only send 64 KB of data and then it must wait for an 
+acknowl- edgment from the receiver that some or all of the data has been received. If the 
+receiver acknowledges that all the data has been received, then the sender is free to send 
+another 64 KB. If the sender gets back an acknowledgment from the receiver that it 
+received the first 32 KB (which could happen if the second 32 KB was still in transit 
+or it could happen if the second 32 KB got lost), then the sender can only send another 
+additional 32 KB since it can’t have more than 64 KB of unacknowledged data outstanding 
+(the second 32 KB of data plus the third).
+
+Congestion Control
+The TCP uses a network congestion avoidance algorithm that includes various aspects of an additive-increase-multiplicative-
+decrease scheme, with other schemes such as slow-start in order to achieve congestion avoidance.
+There are different algorithms to solve the problem; Tahoe and Reno are the most well known. To avoid congestion collapse, 
+TCP uses a multi-faceted congestion control strategy. For each connection, TCP maintains a congestion window, limiting the 
+total number of unac- knowledged packets that may be in transit end-to-end. This is somewhat analogous to TCP’s sliding 
+window used for flow control. TCP uses a mechanism called slow start to increase the congestion window after a connection 
+is initialized and after a timeout. It starts with a win- dow of two times the maximum segment size (MSS). Although the 
+initial rate is low, the rate of increase is very rapid: for every packet acknowledged, the congestion window increases 
+by 1 MSS so that for every round trip time (RTT), the congestion window has doubled. When the congestion window exceeds 
+a threshold ssthresh the algorithm enters a new state, called congestion avoidance. In some implementations (i.e., Linux), 
+the initial ssthresh is large, and so the first slow start usually ends after a loss. However, ssthresh is updated at the 
+end of each slow start, and will often affect subsequent slow starts triggered by timeouts.
