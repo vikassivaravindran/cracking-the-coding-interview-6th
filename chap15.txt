@@ -1,0 +1,393 @@
+chap15
+threads&locks
+implement threads:
+1.implement the java.lang.Runnable interface
+1.1 create a class implements the Runnable interface.
+1.2  create an object of type Thread by passing a Runnable object as argument to the Thread constructor.
+1.3 the start() method is invoked on the Thread object created in the previous step.
+public class Arg implements Runnable
+{
+	public int count=0;
+	
+	public void run()
+	{
+		System.out.println("Runnable starts!");
+		try
+		{
+			while(count<5)
+			{
+				Thread.sleep(500);
+				count++;
+			}
+		}
+		catch(InterruptedException exc)
+		{
+			System.out.println("interrupted!");
+		}
+		System.out.println("End!");
+	}
+
+public static void main(String[]  args)
+{
+	Arg instance=new Arg();
+	Thread t=new Thread(instance);
+	t.start();
+	while(instance.count!=5)
+	{
+		try{
+			Thread.sleep(250);
+		}
+		catch(InterruptedException exc)
+		{
+			exc.printStackTrace();
+		}
+	}
+	}
+}
+implement run() method and then pass an instance of the class and call start()
+2.extend the java.lang.Thread class
+
+1 is preferrable,reason:
+1.java does not support multiple inheritance.
+2.It would be excessive to extend all, just implements runnable is ok.
+
+Synchronization:
+public class MyClass extends Thread
+{
+   private String name;
+   private MyObject o;
+   
+   public MyClass(MyObject obj,String n)
+   {
+     name=n;
+     o=obj;
+   }
+   
+   public void run()
+   {
+     o.foo(name);
+   }
+}
+
+public class MyObject
+{
+   public synchronized void foo(String name)
+   {
+      try
+      {
+         System.out.println("Thread "+name+".foo():starting");
+         Thread.sleep(3000);
+         System.out.println("Thread "+name+".foo():ending");
+      }
+      catch(InterruptedException exc)
+      {
+          System.out.println("Thread "+name+":interrupted.");
+      }
+   }
+}
+
+MyObject obj1=new MyObject();
+MyObject o2=new MyObject();
+MyClass t1=new MyClass(obj1,"1");
+MyClass t2=new MyClass(o2,"2");
+t1.start();
+t2.start();
+
+t1,t2 run at the same time.
+
+Lock
+Lock is used to synchronize access to a shared resource by associating the
+resource with the lock.
+Using locks will help protect a shared resource from being modified
+in unexpected ways.
+public class LockedATM
+{
+   private Lock lock;
+   private int balance = 100;
+   
+   public LockedATM()
+   {
+     lock=new ReentrantLock();
+   }
+   
+   public int withdraw(int value)
+   {
+      lock.lock();
+      int temp=balance;
+      try
+      {
+        Thread.sleep(100);
+        temp-=value;
+        Thread.sleep(100);
+        balance=temp;
+      }
+      catch(InterruptedException e)
+      {
+      
+      }
+      lock.unlock();
+      return temp;
+   }
+   
+   public int deposit(int value)
+   {
+      lock.lock();
+      int temp=balance;
+      try
+      {
+        Thread.sleep(300);
+        temp+=value;
+        Thread.sleep(300);
+        balance=temp;
+      }
+      catch(InterruptedException e)
+      {
+      
+      }
+      lock.unlock();
+      return temp;
+   }
+}
+
+Deadlock occurs:
+1.mutual exclusion: only one process can access a resource at a given time.
+2.hold and wait.
+3.no preemption:one process cannot forcibly remove another process's resource.
+4.circular wait.
+
+15.1
+process & thread
+process can be thought of as an instance of a program in execution.
+It is an independent entity to which system resources(CPU time,memory) are allocated.
+Each process is executed in a separate address space and one
+cannot access the variables and data structures of another process.
+the communication between process can use pipes,files,sockets and other forms.
+
+Thread exists within a process and shares the process's resources(including its heap space).
+Multiple threads within the same process will share the same heap space.
+Each thread still has its own registers and its own stack but other threads can read and write
+the heap memory.
+
+A thread is a particular execution path of a process;when one thread modifies a process
+resource, the change is immediately visible to sibling threads.
+
+15.2
+the time spent in a context switch
+the time refers to such as, bringing a waiting process into execution and 
+sending an executing process into waiting/terminated state.
+The operating system must bring the state information of waiting processes
+into memory and save the state information of the running process.
+Assume two processes:P1,P2
+P1 is executing and P2 is waiting.
+assume the swap action happens at the Nth instruction of P1.
+so the time would be Time_Stamp(P2_1)+Time_Stamp(P2_N)
+so, the next problem is that how do we know when swap occurs?
+Another issue:
+there are many kernel level threads which are also doing context switches.
+Overall, we can say that the time depends on the underlying OS.
+record the end instruction timestamp of a process and start timestamp
+of a process and waiting time in queue.
+the total time of execution of all the processes is T,the 
+switch time =T-(sum(waiting time + execution time))
+
+15.3
+dining philosophers
+class cs
+{
+  private Lock lock;
+  
+  public cs()
+  {
+    lock=new ReetrantLock();
+  }
+  
+  public boolean pickUp()
+  {
+    return lock.tryLock();
+  }
+  
+  public void putDown()
+  {
+     lock.unlock();
+  }
+  
+}
+
+class P extends Thread
+{
+  private int bites=10;
+  private cs left,right;
+  
+  public P(cs left, cs right)
+  {
+    this.left=left;
+    this.right=right;
+  }
+  
+  public void eat()
+  {
+    if(pickUp())
+    {
+    chew();
+    putDown();
+    }
+  }
+  
+  public boolean pickUp()
+  {
+    if(!left.pickUp())
+      return false;
+    if(!right.pickUp())
+    {
+       left.putDown();
+       return false;
+       }
+    return true;
+  }
+  public void chew(){}
+  
+  public void putDown()
+  {
+    right.putDown();
+    left.putDown();
+  }
+  
+  public void run()
+  {
+    for(int i=0;i<bites;i++)
+     eat();
+  }
+}
+
+15.4
+design a class which provides a lock only if there are no possible deadlocks
+
+15.5
+design a mechanism to ensure the order.
+public class Foo
+{
+  public Semaphore sem1,sem2;//信号量
+  
+  public Foo()
+  {
+    try
+    {
+       sem1=new Semaphore(1);
+       sem2=new Semaphore(1);
+       
+       sem1.acquire();
+       sem2.acquire();
+    }
+    catch(InterruptedException e)
+      {
+      
+      }
+  }
+  
+  public void first()
+  {
+  try{
+       sem1.release();}
+       catch(InterruptedException e)
+      {
+      
+      }
+  }
+  
+  public void second()
+  {
+    try{
+       sem1.acquire();
+       sem1.release();
+       sem2.release();
+    }
+    catch(InterruptedException e)
+      {
+      
+      }
+  }
+  
+  public void third()
+  {
+    try{
+       sem2.acquire();
+       sem2.release();
+    }
+    catch(InterruptedException e)
+      {
+      
+      }
+  }
+}
+
+15.6
+only one synchronized method can be in execution per instance of that object.
+
+15.7
+multi-thread code
+1.8 version
+public class Arg extends Thread
+{
+	private static Object lock=new Object();
+	protected static int current=1;
+	private int max;
+	private boolean div3,div5;
+	private String toPrint;
+	
+	public Arg(boolean div3,boolean div5,int max,String toPrint)
+	{
+		this.div3=div3;
+		this.div5=div5;
+		this.max=max;
+		this.toPrint=toPrint;
+	}
+	
+	public void print()
+	{
+		System.out.println(toPrint);
+	}
+	public void run()
+	{
+		while(true)
+		{
+			synchronized(lock)
+			{
+				if(current>max)
+					return;
+				if((current%3==0)==div3&&(current%5==0)==div5)
+				{
+					print();
+					current++;
+				}
+			}
+		}
+	}
+	
+	public static void main(String[] args)
+	{
+		int n=100;
+		Thread[] threads={
+				 new Arg(true,true,n,"FizzBuzz"),
+				 new Arg(true,false,n,"Fizz"),
+				 new Arg(false,true,n,"Buzz"),
+				 new Number(false,false,n)
+				};
+					
+		for(Thread thread:threads)
+			{
+					thread.start();
+			}
+	}
+}
+
+class Number extends Arg
+{
+	public Number(boolean div3,boolean div5,int max)
+	{
+		super(div3,div5,max,null);
+	}
+	public void print()
+	{
+		System.out.println(current);
+	}
+}
