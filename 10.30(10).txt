@@ -1,0 +1,403 @@
+621
+Given a char array representing tasks CPU need to do. It contains capital letters A to Z where different letters represent different tasks.Tasks could be done without original order. Each task could be done in one interval. For each interval, CPU could finish one task or just be idle.
+
+However, there is a non-negative cooling interval n that means between two same tasks, there must be at least n intervals that CPU are doing different tasks or just be idle.
+
+You need to return the least number of intervals the CPU will take to finish all the given tasks.
+
+public static int leastInterval(char[] tasks, int n) {
+         int[] s=new int[26];
+         int count=1;
+         for(int i=0;i<s.length;i++)
+        	 s[i]=0;
+         for(int i=0;i<tasks.length;i++)
+         {
+        	 s[(int)tasks[i]-65]++;
+         }
+         Arrays.sort(s);
+         for(int i=24;i>=0;i--)
+         {
+        	 if(s[i]==s[25])
+        		 count++;
+        	 else
+        		 break;
+         }
+         return Math.max((s[25]-1)*(n+1)+count,tasks.length);
+     }
+     
+494
+You are given a list of non-negative integers, a1, a2, ..., an, and a target, S. Now you have 2 symbols + and -. For each integer, you should choose one from + and - as its new symbol.
+
+Find out how many ways to assign symbols to make sum of integers equal to target S.
+ public static int findTargetSumWays(int[] nums, int S) {
+         List<Integer> l=new ArrayList<Integer>();
+         int[] a=new int[nums.length];
+         backtrack(a,0,l,nums);
+         int count=0;
+         for(int i=0;i<l.size();i++)
+         {
+        	 if(l.get(i)==S)
+        		 count++;
+         }
+         return count;
+     }
+     
+     private static void backtrack(int[] result,int cur,List<Integer> r,int[] nums){
+ 	    if(cur==result.length)
+ 	    {
+ 	    	int sum=0;
+ 	    	for(int i=0;i<result.length;i++)
+ 	    	{
+ 	    		if(result[i]==1)
+ 	    			sum+=nums[i];
+ 	    		else
+ 	    			sum-=nums[i];
+ 	    	}
+ 	    	r.add(sum);
+ 	       return;
+ 	    }
+ 	    for(int i=0;i<2;i++)
+ 	    {
+ 	        result[cur]=i;
+ 	        backtrack(result,cur+1,r,nums);
+ 	    }
+}
+
+287
+Given an array nums containing n + 1 integers where each integer is between 1 and n (inclusive), prove that at least one duplicate number must exist. Assume that there is only one duplicate number, find the duplicate one.
+public int findDuplicate(int[] nums) {
+        Map<Integer,Integer> map=new HashMap<Integer,Integer>();
+         for(int i=0;i<nums.length;i++)
+         {
+        	 if(!map.containsKey(nums[i]))
+        		 map.put(nums[i],i);
+        	 else
+        		 return nums[i];
+         }
+         return -1;
+    }
+    
+337
+The thief has found himself a new place for his thievery again. There is only one entrance to this area, called the "root." Besides the root, each house has one and only one parent house. After a tour, the smart thief realized that "all houses in this place forms a binary tree". It will automatically contact the police if two directly-linked houses were broken into on the same night.
+
+Determine the maximum amount of money the thief can rob tonight without alerting the police.
+ public static int rob(TreeNode root) {
+    	    if (root == null) return 0;
+    	    return Math.max(robInclude(root), robExclude(root));
+    	}
+
+    	public static int robInclude(TreeNode node) {
+    	    if(node == null) return 0;
+    	    return robExclude(node.left) + robExclude(node.right) + node.val;
+    	}
+
+    	public static int robExclude(TreeNode node) {
+    	    if(node == null) return 0;
+    	    return rob(node.left) + rob(node.right);
+    	}
+
+98
+Given a binary tree, determine if it is a valid binary search tree (BST).
+ public static boolean isValidBST(TreeNode root) {
+         return isBST(root,Long.MIN_VALUE,Long.MAX_VALUE);
+     }
+     
+     private static boolean isBST(TreeNode root,long low,long high)
+     {
+    	 if(root==null)
+    		 return true;
+    	 if(root.val>low&&root.val<high)
+    		 return isBST(root.left,low,root.val)&&isBST(root.right,root.val,high);
+    	 else
+    		 return false;
+     }
+     
+152
+ind the contiguous subarray within an array (containing at least one number) which has the largest product.
+
+For example, given the array [2,3,-2,4],
+the contiguous subarray [2,3] has the largest product = 6.
+public static int maxProduct(int[] nums) {
+         if(nums==null||nums.length==0)
+        	 return 0;
+         int max=nums[0];
+         int min=nums[0];
+         int result=nums[0];
+         for(int i=1;i<nums.length;i++)
+         {
+        	 int temp=max;
+        	 max=Math.max(Math.max(max*nums[i], min*nums[i]), nums[i]);
+        	 min=Math.min(Math.min(temp*nums[i],min*nums[i]),nums[i]);
+        	 if(max>result)
+        		 result=max;
+         }
+         return result;
+     }
+     
+79
+Given a 2D board and a word, find if the word exists in the grid.
+
+The word can be constructed from letters of sequentially adjacent cell, where "adjacent" cells are those horizontally or vertically neighboring. The same letter cell may not be used more than once.
+ public static boolean exist(char[][] board, String word) {
+    	 boolean[][] visited=new boolean[board.length][board[0].length];
+    	 for(int m=0;m<board.length;m++)
+    		 for(int k=0;k<board[0].length;k++)
+    			 visited[m][k]=false;
+    	 char[] w=word.toCharArray();
+    	 for(int i=0;i<board.length;i++)
+    		 for(int j=0;j<board[0].length;j++)
+    		 {
+    			 for(int m=0;m<board.length;m++)
+    	    		 for(int k=0;k<board[0].length;k++)
+    	    			 visited[m][k]=false;
+    			 if(isExist(i,j,board,0,w,visited))
+    				 return true;
+    		 }  
+    	 return false;
+     }
+
+    private static boolean isExist(int x,int y,char[][] b,int count,char[] w,boolean[][] v)
+    {
+    	if(count==w.length)
+    		return true;
+    	if(x<0||y<0||x==b.length||y==b[0].length||v[x][y]==true)
+    		return false;
+    	if(b[x][y]==w[count])
+    	{
+    		v[x][y]=true;
+    		count++;
+    		if(isExist(x-1,y,b,count,w,v)||isExist(x+1,y,b,count,w,v)||isExist(x,y+1,b,count,w,v)||isExist(x,y-1,b,count,w,v))
+    			return true;
+    		else
+    		{
+    			v[x][y]=false;
+    			return false;
+    		}
+    		
+    	}
+    	else
+    	{
+    		return false;
+    	}
+    }
+    
+2
+You are given two non-empty linked lists representing two non-negative integers. The digits are stored in reverse order and each of their nodes contain a single digit. Add the two numbers and return it as a linked list.
+public static ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+         ListNode p=new ListNode(0);
+         ListNode head=p;
+         add2(l1,l2,0,p);
+         return head.next;
+     }
+     
+     private static void add2(ListNode l1, ListNode l2,int del,ListNode r)
+     {
+    	 ListNode l=new ListNode(0);
+         if(l1!=null&&l2!=null)
+         {
+        	int ans=l1.val+l2.val+del;
+        	if(ans>9)
+        	{
+        		l.val=ans%10;
+        		r.next=l;
+        		r=r.next;
+        		add2(l1.next,l2.next,1,r);
+        	}
+        	else
+        	{
+        		l.val=ans;
+        		r.next=l;
+        		r=r.next;
+        		add2(l1.next,l2.next,0,r);
+        	}
+         }
+         else if(l1==null&&l2!=null)
+         {
+        	 int ans=del+l2.val;
+        	 if(ans>9)
+        	 {
+        		 l.val=ans%10;
+        		 r.next=l;
+        		 r=r.next;
+        		 add2(l1,l2.next,1,r);
+        	 }
+        	 else
+        	 {
+        		 l.val=ans;
+        		 r.next=l;
+        		 r=r.next;
+        		 add2(l1,l2.next,0,r);
+        	 }
+         }
+         else if(l2==null&&l1!=null)
+         {
+        	 int ans=del+l1.val;
+        	 if(ans>9)
+        	 {
+        		 l.val=ans%10;
+        		 r.next=l;
+        		 r=r.next;
+        		 add2(l1.next,l2,1,r);
+        	 }
+        	 else
+        	 {
+        		 l.val=ans;
+        		 r.next=l;
+        		 r=r.next;
+        		 add2(l1.next,l2,0,r);
+        	 }
+         }
+         else
+         {
+        	 if(del==1)
+        	 {
+        		 l.val=1;
+        		 r.next=l;
+        	 }
+        	 return;
+         }
+     }
+
+31
+Implement next permutation, which rearranges numbers into the lexicographically next greater permutation of numbers.
+
+If such arrangement is not possible, it must rearrange it as the lowest possible order (ie, sorted in ascending order).
+
+The replacement must be in-place, do not allocate extra memory.
+public static void nextPermutation(int[] nums) {
+         if(nums==null||nums.length<=1)
+        	 return;
+         int i=nums.length-2;
+         while(i>=0&&nums[i]>=nums[i+1])
+        	 i--;
+         if(i>=0)
+         {
+        	 int j=nums.length-1;
+        	 while(nums[j]<=nums[i])
+        		 j--;
+        	 swap(nums,i,j);
+         }
+         reverse(nums,i+1,nums.length-1);
+     }
+    
+     private static void reverse(int[] nums,int start,int end)
+     {
+    	 while(start<end)
+    		 swap(nums,start++,end--);
+     }
+     
+     private static void swap(int[] nums,int start,int end)
+     {
+    	 int mid=nums[start];
+    	 nums[start]=nums[end];
+    	 nums[end]=mid;
+     }
+     
+148
+Sort a linked list in O(n log n) time using constant space complexity.
+public static ListNode sortList(ListNode head) {
+         int count=0;
+         ListNode l=head;
+         ListNode p=head;
+         if(head==null||head.next==null)
+        	 return head;
+         while(head!=null)
+         {
+        	 count++;
+        	 head=head.next;
+         }
+         int[] n=new int[count];
+         for(int i=0;i<count;i++)
+         {
+        	 n[i]=p.val;
+        	 p=p.next;
+         }
+         Arrays.sort(n);
+         ListNode l2=new ListNode(0);
+         l=l2;
+         for(int i=0;i<n.length;i++)
+         {
+        	 l2.next=new ListNode(n[i]);
+        	 l2=l2.next;
+         }
+         return l.next;
+     }
+     
+208
+Implement a trie with insert, search, and startsWith methods.
+class Trie {
+    private TrieNode root;
+    
+    public Trie() {
+        root=new TrieNode();
+    }
+    
+    public void insert(String word) {
+        HashMap<Character,TrieNode> map=root.children;
+        for(int i=0;i<word.length();i++)
+        {
+        	char c=word.charAt(i);
+        	TrieNode t;
+        	if(map.containsKey(c))
+        		t=map.get(c);
+        	else
+        	{
+        		t=new TrieNode(c);
+        		map.put(c, t);
+        	}
+        	map=t.children;
+        	if(i==(word.length()-1))
+        		t.isLeaf=true;
+        }
+    }
+    
+    public boolean search(String word) {
+    	TrieNode t=searchNode(word);
+    	if(t!=null&&t.isLeaf)
+    		return true;
+    	else
+    		return false;
+    }
+    
+    public boolean startsWith(String prefix) {
+        if(searchNode(prefix)==null)
+        	return false;
+        else
+        	return true;
+    }
+    
+    public TrieNode searchNode(String str)
+    {
+    	 HashMap<Character,TrieNode> map=root.children;
+    	 TrieNode t=null;
+    	 for(int i=0;i<str.length();i++)
+    	 {
+    		 char c=str.charAt(i);
+    		 if(map.containsKey(c))
+    		 {
+    			 t=map.get(c);
+    			 map=t.children;
+    		 }
+    		 else
+    			 return null;
+    	 }
+    	 return t;
+    }
+}
+
+class TrieNode
+{
+	char c;
+	HashMap<Character,TrieNode> children=new HashMap<Character,TrieNode>();
+	boolean isLeaf;
+	
+	public TrieNode()
+	{
+		
+	}
+	
+	public TrieNode(char c)
+	{
+		this.c=c;
+	}
+}
