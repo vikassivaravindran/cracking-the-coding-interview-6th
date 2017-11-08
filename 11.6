@@ -1,0 +1,154 @@
+11.
+public static int maxArea(int[] height) {
+         int result=0;
+         int start=0;
+         int end=height.length-1;
+         while(start<end)
+         {
+        	 int mid=Math.min(height[start],height[end]);
+        	 result=Math.max(result,Math.abs(end-start)*mid);
+        	 if(height[start]<height[end])
+        		 start++;
+        	 else
+        		 end--;
+         }
+         return result;
+     }
+     
+49
+public List<List<String>> groupAnagrams(String[] strs) {
+        if (strs == null || strs.length == 0) return new ArrayList<List<String>>();
+        Map<String, List<String>> map = new HashMap<String, List<String>>();
+        for (String s : strs) {
+            char[] ca = s.toCharArray();
+            Arrays.sort(ca);
+            String keyStr = String.valueOf(ca);
+            if (!map.containsKey(keyStr)) map.put(keyStr, new ArrayList<String>());
+            map.get(keyStr).add(s);
+        }
+        return new ArrayList<List<String>>(map.values());
+    }
+    
+114
+public void flatten(TreeNode root) {
+        if(root==null)
+        	 return;
+         TreeNode left=root.left;
+         TreeNode right=root.right;
+         
+         root.left=null;
+         flatten(left);
+         flatten(right);
+         root.right=left;
+         TreeNode cur=root;
+         while(cur.right!=null)
+        	 cur=cur.right;
+         cur.right=right;
+    }
+    
+ 200
+ public static char[][] g;
+     public static int numIslands(char[][] grid) 
+     {
+         int count=0;
+         g=grid;
+         for(int i=0;i<grid.length;i++)
+        	 for(int j=0;j<grid[0].length;j++)
+        		 count+=sink(i,j);
+         return count;
+     }
+     
+     private static int sink(int i,int j)
+     {
+    	 if(i<0||j<0||i==g.length||j==g[i].length||g[i][j]=='0')
+    		 return 0;
+    	 g[i][j]='0';
+    	 sink(i-1,j);
+    	 sink(i+1,j);
+    	 sink(i,j+1);
+    	 sink(i,j-1);
+    	 return 1;
+     }
+     
+ 19
+  public ListNode removeNthFromEnd(ListNode head, int n) {
+        ListNode start = new ListNode(0);
+    ListNode slow = start, fast = start;
+    slow.next = head;
+    
+    //Move fast in front so that the gap between slow and fast becomes n
+    for(int i=1; i<=n+1; i++)   {
+        fast = fast.next;
+    }
+    //Move fast to the end, maintaining the gap
+    while(fast != null) {
+        slow = slow.next;
+        fast = fast.next;
+    }
+    //Skip the desired node
+    slow.next = slow.next.next;
+    return start.next;
+    }
+    
+ 105
+ public TreeNode buildTreeHelper(int[] inorder,int is,int ie,int[] preorder,int ps) {
+        if(is>ie || ps >= preorder.length) return null;
+        //首先从inorder中确定第一个，然后既可以划分左右子树
+        TreeNode root = new TreeNode(preorder[ps]);
+        int rootAtIn = is;
+        while(inorder[rootAtIn] != root.val) rootAtIn ++;
+        //拆分成两个子问题
+        root.left =  buildTreeHelper(inorder,is,rootAtIn - 1,preorder,ps+1);
+        root.right = buildTreeHelper(inorder,rootAtIn+1,ie,preorder,ps+rootAtIn - is + 1);
+        return root;
+    }
+    public TreeNode buildTree(int[] preorder, int[] inorder) {
+        return buildTreeHelper(inorder,0,inorder.length-1,preorder,0);
+
+    }
+    
+ 207
+ public static boolean canFinish(int numCourses, int[][] prerequisites) 
+     {
+         if(numCourses<=0)
+        	 return true;
+         ArrayList[] g=new ArrayList[numCourses];
+         int[] degree=new int[numCourses];
+         Queue q=new LinkedList<Integer>();
+         int count=0;
+         
+         for(int i=0;i<numCourses;i++)
+        	 g[i]=new ArrayList();
+         for(int i=0;i<prerequisites.length;i++)
+         {
+        	 degree[prerequisites[i][1]]++;
+        	 g[prerequisites[i][0]].add(prerequisites[i][1]);
+         }
+         
+         for(int i=0;i<degree.length;i++)
+         {
+        	 if(degree[i]==0)
+        	 {
+        		 q.add(i);
+        		 count++;
+        	 }
+         }
+         while(q.size()!=0)
+         {
+        	 int course=(Integer) q.poll();
+        	 for(int i=0;i<g[course].size();i++)
+        	 {
+        		 int pointer=(Integer) g[course].get(i);
+        		 degree[pointer]--;
+        		 if(degree[pointer]==0)
+        		 {
+        			 q.add(pointer);
+        			 count++;
+        		 }
+        	 }
+         }
+         if(count==numCourses)
+        	 return true;
+         else
+        	 return false;
+     }
