@@ -1,0 +1,239 @@
+//leetcode1
+   public static int[] sum(int[] nums,int target)
+   {
+	   int[] result=new int[2];
+	  for(int i=0;i<nums.length;i++)
+		  for(int j=i+1;j<nums.length;j++)
+		  {
+			  if(nums[i]+nums[j]==target)
+			  {
+				  result[0]=i+1;
+				  result[1]=j+1;
+			  }
+		  }
+	  return result;
+   }
+   
+   //leetcode13  XCVIII
+   public static int RToI(String r)
+   {
+	   HashMap<Character,Integer> map=new HashMap<Character,Integer>();
+	   map.put('I', 1);
+	   map.put('V', 5);
+	   map.put('X', 10);
+	   map.put('L', 50);
+	   map.put('C', 100);
+	   map.put('D', 500);
+	   map.put('M', 1000);
+	   int number=map.get(r.charAt(r.length()-1));
+	   for(int i=r.length()-2;i>=0;i--) 
+	   {
+		   if(map.get(r.charAt(i))>=map.get(r.charAt(i+1)))
+			   number+=map.get(r.charAt(i));
+		   else
+			   number-=map.get(r.charAt(i));
+	   }
+	   return number;
+   }
+   
+   //leetcode20
+   public static boolean isValid(String s)
+   {
+	   Stack<Character> stack=new Stack<Character>();
+	   for(int i=0;i<s.length();i++)
+	   {
+		   if(s.charAt(i)=='{')
+			   stack.push('}');
+		   else if(s.charAt(i)=='(')
+			   stack.push(')');
+		   else if(s.charAt(i)=='[')
+			   stack.push(']');
+		   else if(stack.isEmpty()||stack.pop()!=s.charAt(i))
+			   return false;	   
+	   }
+	   return stack.isEmpty();
+   }
+   
+   //leetcode23
+   public static ListNode mergeKLists(ListNode[] list)
+   {
+	  return partion(list,0,list.length);
+   }
+   
+   private static ListNode partion(ListNode[] list, int s,int e)
+   {
+	   if(s==e)
+		   return list[s];
+	   if(s<e)
+	   {
+		   int mid=(s+e)/2;
+		   ListNode l1=partion(list,0,mid);
+		   ListNode l2=partion(list,mid+1,e);
+		   return merge(l1,l2);
+	   }
+	   else
+		   return null;
+   }
+   public static ListNode merge(ListNode l1,ListNode l2){
+	    if(l1==null) return l2;
+	    if(l2==null) return l1;
+	    if(l1.val<l2.val){
+	        l1.next=merge(l1.next,l2);
+	        return l1;
+	    }else
+	    {
+	        l2.next=merge(l1,l2.next);
+	        return l2;
+	    }
+   }
+   
+   //leetcode10**
+   public static boolean isMatch(String s,String p)
+   {
+	   if(s==null||p==null)
+		   return false;
+	   boolean[][] dp=new boolean[s.length()+1][p.length()+1];
+	   dp[0][0]=true;
+	   for(int i=0;i<p.length();i++)
+	   {
+		   if(p.charAt(i)=='*'&&dp[0][i-1])
+			   dp[0][i+1]=true;
+	   }
+	   
+	   for(int i=0;i<s.length();i++)
+	      for(int j=0;j<p.length();j++)
+	      {
+	    	  if(p.charAt(j)=='.')
+	    		  dp[i+1][j+1]=dp[i][j];
+	    	  if(p.charAt(j)==s.charAt(i))
+	    		  dp[i+1][j+1]=dp[i][j];
+	    	  if(p.charAt(j)=='*')
+	    	  {
+	    		  if(p.charAt(j-1)!=s.charAt(i)&&p.charAt(j-1)!='.')
+	    			  dp[i+1][j+1]=dp[i+1][j-1];
+	    		  else
+	    			  dp[i+1][j+1]=(dp[i+1][j] || dp[i][j+1] || dp[i+1][j-1]);
+	    	  }
+	      }
+	   return dp[s.length()][p.length()];
+   }
+   
+   //leetcode15
+   public static List<List<Integer>> Sum(int[] nums)
+   {
+	   Arrays.sort(nums);
+	   List<List<Integer>> ans = new ArrayList<List<Integer>>();
+	   for(int i=0;i<nums.length;i++)
+	   {
+		  find(nums,(-1)*nums[i],ans,i);
+	   }
+	   return ans;
+   }
+   
+   private static void find(int[] nums,int target,List<List<Integer>> ans,int index)
+   {
+	   List<Integer> result=new ArrayList<Integer>();
+	   for(int i=0;i<nums.length;i++)
+	   {
+		   if(i==index)
+			   continue;
+		   result=new ArrayList<Integer>();
+		   for(int j=i+1;j<nums.length;j++)
+		   {
+			   if(j==index)
+				   continue;
+			   if(nums[i]+nums[j]==target)
+			   {
+				   int[] ans2=new int[3];
+				   ans2[0]=(-1)*target;
+				   ans2[1]=nums[i];
+				   ans2[2]=nums[j];
+				   Arrays.sort(ans2);
+				   for(int k=0;k<3;k++)
+					   result.add(ans2[k]);
+				   if(!ans.contains(result))
+					   ans.add(result);
+				   break;
+			   }
+		   }
+	   }
+   }
+   
+   public static List<List<Integer>> Sum2(int[] nums)
+   {
+	   List<List<Integer>> ans = new ArrayList<List<Integer>>();
+	   Arrays.sort(nums);
+	   for(int i=0;(i+2)<nums.length;i++)
+	   {
+		   if(i>0&&nums[i]==nums[i-1])
+			   continue;
+		   int j=i+1;
+		   int k=nums.length-1;
+		   int target= -nums[i];
+		   while(j<k)
+		   {
+			   if(nums[j]+nums[k]==target)
+			   {
+				  // if(!ans.contains(Arrays.asList(nums[j],nums[k],-target)))
+				   ans.add(Arrays.asList(nums[j],nums[k],-target));
+				   j++;
+				   k--;
+				   while (j < k && nums[j] == nums[j - 1]) j++;  // skip same result
+	                while (j < k && nums[k] == nums[k + 1]) k--;  // skip same result
+			   }
+			   else if(nums[j]+nums[k]<target)
+				   j++;
+			   else
+				   k--;
+		   }
+	   }
+	   return ans;
+   }
+   
+   //leetcode17
+   private static final String[] KEYS={ "", "", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz" };
+   public static List<String> letterCombinations(String digits) 
+   {
+       List<String> l=new LinkedList<String>();
+       Combine(digits,l,"",0);
+       return l;
+   }
+   
+   private static void Combine(String digits, List<String> list,String prefix,int offset)
+   {
+	   if(offset>=digits.length())
+	   {
+		   list.add(prefix);
+		   return;
+	   }
+	   String letters=KEYS[(int)(digits.charAt(offset)-'0')];
+	   for(int i=0;i<letters.length();i++)
+		   Combine(digits,list,prefix+letters.substring(i,i+1),offset+1);
+   }
+   
+   //leetcode33
+   public static int search(int[] nums, int target) 
+   {
+	        int start = 0;
+	        int end = nums.length - 1;
+	        while (start <= end){
+	            int mid = (start + end) / 2;
+	            if (nums[mid] == target)
+	                return mid;
+	        
+	            if (nums[start] <= nums[mid]){
+	                 if (target < nums[mid] && target >= nums[start]) 
+	                    end = mid - 1;
+	                 else
+	                    start = mid + 1;
+	            } 
+	        
+	            if (nums[mid] <= nums[end]){
+	                if (target > nums[mid] && target <= nums[end])
+	                    start = mid + 1;
+	                 else
+	                    end = mid - 1;
+	            }
+	        }
+	        return -1;
+   }
