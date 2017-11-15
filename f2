@@ -1,0 +1,179 @@
+//leetcode43
+   public static String multiply(String num1, String num2) 
+   {
+	   int m=num1.length();
+	   int n=num2.length();
+	   int[] pos=new int[m+n];
+	   for(int i=m-1;i>=0;i--)
+		   for(int j=n-1;j>=0;j--)
+		   {
+			   int mul=(num1.charAt(i)-'0')*(num2.charAt(j)-'0');
+			   int p=i+j;
+			   int q=i+j+1;
+			   int sum=mul+pos[q];
+			   pos[p]+=sum/10;
+			   pos[q]=sum%10;
+		   }
+	   
+	   StringBuilder sb=new StringBuilder();
+	   for(int p:pos)
+		   if(!(sb.length()==0&&p==0))
+			   sb.append(p);
+	   return sb.length()==0?"0":sb.toString();
+   }
+
+   //leetcode49
+   public static List<ArrayList> groupAnagrams(String[] strs)
+   {
+	   HashSet<String> set=new HashSet<String>();
+	   List<ArrayList> result=new ArrayList();
+	   for(int i=0;i<strs.length;i++)
+	   {
+		   List<String> mid=new ArrayList<String>();
+		   if(!set.contains(SortString(strs[i])))
+		   {
+			   set.add(SortString(strs[i]));
+			   mid.add(strs[i]);
+		   for(int j=i+1;j<strs.length;j++)
+		   {
+			   if(SortString(strs[j]).equals(SortString(strs[i])))
+				   mid.add(strs[j]);
+		   }
+		   result.add((ArrayList) mid);
+		   }
+		   else
+			   continue;
+	   }
+	   return result;
+   }
+   
+   private static String SortString(String a)
+   {
+	   int[] count=new int[255];
+	   for(int i=0;i<a.length();i++)
+	   {
+		   count[(int)a.charAt(i)]++;
+	   }
+	   StringBuilder sb=new StringBuilder();
+	   for(int k=0;k<count.length;k++)
+	   {
+		   for(int i=0;i<count[k];i++)
+			   sb.append((char)k);
+	   }
+	   return sb.toString();
+   }
+   
+   //solution2
+   /*public List<List<String>> groupAnagrams(String[] strs) {
+       if (strs == null || strs.length == 0) return new ArrayList<List<String>>();
+       Map<String, List<String>> map = new HashMap<String, List<String>>();
+       for (String s : strs) {
+           char[] ca = s.toCharArray();
+           Arrays.sort(ca);
+           String keyStr = String.valueOf(ca);
+           if (!map.containsKey(keyStr)) map.put(keyStr, new ArrayList<String>());
+           map.get(keyStr).add(s);
+       }
+       return new ArrayList<List<String>>(map.values());
+   }*/
+   
+   //leetcode50
+   public static double myPow(double x, int m) {
+       double temp=x;
+       if(m==0)
+       return 1;
+       temp=myPow(x,m/2);
+       if(m%2==0)
+       return temp*temp;
+       else 
+       {
+       if(m > 0)
+           return x*temp*temp;
+       else
+           return (temp*temp)/x;
+       }  
+    }
+   
+   //leetcode 56
+    public static List<Interval> merge(List<Interval> intervals)
+    {
+    	int n=intervals.size();
+    	int[] starts=new int[n];
+    	int[] ends=new int[n];
+    	List<Interval> result=new ArrayList<Interval>();
+    	for(int i=0;i<intervals.size();i++)
+    	{
+    		starts[i]=intervals.get(i).start;
+    		ends[i]=intervals.get(i).end;
+    	}
+    	Arrays.sort(starts);
+    	Arrays.sort(ends);
+    	for(int i = 0,j=0;i<n;i++)
+    	{
+    		if(i==n-1||starts[i+1]>ends[i])
+    		{
+    			result.add(new Interval(starts[j],ends[i]));
+    			j=i+1;
+    		}
+    	}
+    	return result;
+    }
+    
+    //leetcode71
+    public static String simplifyPath(String path) 
+    {
+    	Deque <String> stack=new LinkedList();
+    	HashSet<String> skip=new HashSet<String>(Arrays.asList("..",".",""));
+    	for(String dir:path.split("/"))
+    	{
+    		if(dir.equals("..")&&!stack.isEmpty())
+    			stack.pop();
+    		else if(!skip.contains(dir))
+    			stack.push(dir);
+    	}
+    	String res="";
+    	for(String dir:stack)
+    		res="/"+dir+res;
+    	return res.isEmpty()?"/":res;
+    }
+    
+    //leetcode75
+    public static void sortColors(int[] nums)
+    {
+    	int start=0;
+    	int end=nums.length-1;
+    	int i=0;
+    	while(i<=end)
+    	{
+    		if(nums[i]==0)
+    		{
+    			nums[i]=nums[start];
+    			nums[start]=0;
+    			start++;
+    		}
+    		if(nums[i]==2)
+    		{
+    			nums[i]=nums[end];
+    			nums[end]=2;
+    			end--;
+    			i--;
+    		}
+    		i++;
+    	}
+    }
+    
+    private static void swap(int[] nums,int i,int j)
+    {
+    	if(i==j)
+    		return;
+    	int temp=nums[i];
+    	nums[i]=nums[j];
+    	nums[j]=temp;
+    }
+    
+    class Interval {
+     int start;
+	 int end;
+	 Interval() { start = 0; end = 0; }
+	 Interval(int s, int e) { start = s; end = e; }
+}
