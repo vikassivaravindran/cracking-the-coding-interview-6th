@@ -1,0 +1,202 @@
+//leetcode26
+   public static int removeDuplicates(int[] nums)
+   {
+	   int index=1;
+	   for(int i=1;i<nums.length;i++)
+	   {
+		   if(nums[i]==nums[i-1])
+			   continue;
+		   else
+		   {
+			   nums[index]=nums[i];
+			   index++;
+		   }
+	   }
+	   return index;
+   }
+   
+   //leetcode28
+   public static int strStr(String haystack, String needle) 
+   {
+	   if(haystack==null)
+		   return -1;
+	   if(haystack.length()==0&&needle.length()==0)
+		   return 0;
+	   if(haystack.length()==0)
+		   return -1;
+	   if(haystack.equals(needle))
+		   return 0;
+       int m=needle.length();
+       int n=haystack.length();
+       String mid="";
+       for(int i=0;i<=(n-m);i++)
+       {
+    	   mid=haystack.substring(i,i+m);
+    	   if(mid.equals(needle))
+    		   return i;
+       }
+       return -1;
+   }
+   
+   //leetcode38**
+   public static String countAndSay(int n) 
+   {
+	   StringBuilder curr=new StringBuilder("1");
+   	   StringBuilder prev;
+   	   int count;
+   	   char say;
+       for (int i=1;i<n;i++){
+       	    prev=curr;
+	        curr=new StringBuilder();       
+	        count=1;
+	        say=prev.charAt(0);
+	        for (int j=1,len=prev.length();j<len;j++){
+	        	if (prev.charAt(j)!=say){
+	        		curr.append(count).append(say);
+	        		count=1;
+	        		say=prev.charAt(j);
+	        	}
+	        	else count++;
+	        }
+	        curr.append(count).append(say);
+       }	       	        
+       return curr.toString();
+   }
+   
+   //leetcode25
+   public static ListNode reverseKGroup(ListNode head, int k) 
+   {
+	   if(k==1)
+		   return head;
+	   ListNode start=new ListNode(0);
+	   start.next=head;
+	   ListNode startcount=start.next;
+       if(head==null)
+    	   return null;
+       int count=0;
+       while(startcount!=null)
+       {
+    	  count++;
+    	  startcount=startcount.next;
+       }
+       if(k>count)
+    	   return reverse(head);
+       int len=count/k;
+       ListNode[] nodes=new ListNode[len];
+       int countk=1;
+       int i=0;
+       ListNode temp=head;
+       ListNode cut=head;
+       int t=0;
+       while(i<len*k)
+       {
+    	   if(countk<k)
+    	   {
+    		   cut=cut.next;
+    		   countk++;
+    		   
+    	   }
+    	   else if(countk==k)
+    	   {
+    		   
+    		   ListNode curLen=temp;
+    		   temp=cut.next;
+    		   cut.next=null;
+    		   nodes[t]=curLen;
+    		   t++;
+    		   cut=temp;
+    		   countk=1;
+    	   } 
+    	   i++;
+       }
+       for(i=0;i<len;i++)
+    	   nodes[i]=reverse(nodes[i]);
+       ListNode result=merge(nodes);
+       ListNode result2=result;
+       while(result2.next!=null)
+    	   result2=result2.next;
+       result2.next=cut;
+       return result;
+   }
+   
+   private static ListNode merge(ListNode[] nodes)
+   {
+	   ListNode start=new ListNode(0);
+	   start.next=nodes[0];
+	   ListNode end=start.next;
+	   for(int i=0;i<nodes.length-1;i++)
+	   {
+		   while(end.next!=null)
+		   {
+			   end=end.next;
+		   }
+		   end.next=nodes[i+1];
+	   }
+	   return start.next;
+   }
+   
+   private static ListNode reverse(ListNode head)
+   {
+	   if(head==null)
+		   return null;
+	   if(head.next==null)
+		   return head;
+	   ListNode l=head.next;
+	   ListNode cur=new ListNode(head.val);
+	   while(l!=null)
+	   {
+		   ListNode pre=new ListNode(l.val);
+		   pre.next=cur;
+		   cur=pre;
+		   l=l.next;
+	   }
+	   return cur;
+   }
+   
+   //leetcode57
+   public static List<Interval> insert(List<Interval> intervals, Interval newInterval) {
+       int n=intervals.size();
+       int[] start=new int[n+1];
+       int[] end=new int[n+1];
+       for(int i=0;i<n;i++)
+       {
+    	   start[i]=intervals.get(i).start;
+    	   end[i]=intervals.get(i).end;
+       }
+       start[n]=newInterval.start;
+       end[n]=newInterval.end;
+       Arrays.sort(start);
+       Arrays.sort(end);
+       List<Interval> result=new ArrayList<Interval>();
+       if(n==0)
+       {
+    	   result.add(newInterval);
+    	   return result;
+       }
+       for(int i = 0,j=0;i<n+1;i++)
+   	{
+   		if(i==n||start[i+1]>end[i])
+   		{
+   			result.add(new Interval(start[j],end[i]));
+   			j=i+1;
+   		}
+   	}
+       return result;
+   }
+   
+class ListNode
+{
+	int val;
+	ListNode next;
+	public ListNode(int x)
+	{
+		val=x;
+	}
+}
+
+class Interval {
+     int start;
+	 int end;
+	 Interval() { start = 0; end = 0; }
+	 Interval(int s, int e) { start = s; end = e; }
+}
