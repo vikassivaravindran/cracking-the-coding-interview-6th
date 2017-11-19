@@ -1,0 +1,333 @@
+//leetcode75
+    public static List<ArrayList> subsets(int[] nums) 
+    {
+    	Arrays.sort(nums);
+        List<ArrayList> result=new ArrayList<ArrayList>();
+        int[] n=new int[nums.length];
+        subsets(0,nums,n,result);
+        return result;
+    }
+    
+    private static void subsets(int current,int[] nums,int[] result,List<ArrayList> result2)
+    {
+    	if(current==nums.length)
+    	{
+    		List<Integer> l=new ArrayList<Integer>();
+    		for(int i=0;i<result.length;i++)
+    		{
+    			if(result[i]==1)
+    				l.add(nums[i]);
+    		}
+    		result2.add((ArrayList) l);
+    		return;
+    	}
+    	for(int i=0;i<2;i++)
+    	{
+    		result[current]=i;
+    		subsets(current+1,nums,result,result2);
+    	}
+    }
+    
+    //leetcode79
+    static boolean[][] IsVisited;
+    public static boolean exist(char[][] board, String word) {
+        IsVisited=new boolean[board.length][board[0].length];
+        for(int i=0;i<board.length;i++ )
+        	for(int j=0;j<board[0].length;j++)
+        	{
+        		if(word.charAt(0)==board[i][j]&&search(board,word,i,j,0))
+        			return true;
+        	}
+        return false;
+    }
+    
+    private static boolean search(char[][] board, String word,int i,int j,int index)
+    {
+    	if(index==word.length())
+    		return true;
+    	if(i>=board.length||i<0||j<0||j==board[0].length||board[i][j]!=word.charAt(index)||IsVisited[i][j])
+    		return false;
+    	IsVisited[i][j]=true;
+    	if(search(board,word,i-1,j,index+1)||search(board,word,i+1,j,index+1)||search(board,word,i,j-1,index+1)||search(board,word,i,j+1,index+1))
+    		return true;
+    	IsVisited[i][j]=false;
+    	return false;
+    }
+    
+    //leetcode98
+    public static boolean isValidBST(TreeNode root) 
+    {
+        if(root==null||(root.left==null&&root.right==null))
+        	return true;
+        return isBST(root,Integer.MAX_VALUE,Integer.MIN_VALUE);
+    }
+    
+    private static boolean isBST(TreeNode root,int max,int min)
+    {
+    	if(root==null)
+    		return true;
+    	if(root.val>=max||root.val<=min)
+    		return false;
+    	return isBST(root.left,root.val,min)&&isBST(root.right,max,root.val);
+    }
+    
+    //leetcode91
+    public static int numDecodings(String s) 
+    {
+        if(s==null||s.length()==0)
+        	return 0;
+        int n=s.length();
+        int[] dp=new int[n+1];
+        dp[0]=1;
+        dp[1]=s.charAt(0)!='0'?1:0;
+        for(int i=2;i<=n;i++)
+        {
+        	int first=Integer.valueOf(s.substring(i-1,i));
+        	int second=Integer.valueOf(s.substring(i-2,i));
+        	if(first>=1&&first<=9)
+        		dp[i]+=dp[i-1];
+        	if(second>=10&&second<=26)
+        		dp[i]+=dp[i-2];
+        }
+        return dp[n];
+    }
+    
+    //leetcode90, delete duplicate subsets
+     public static List<ArrayList> subsetsWithDup(int[] nums) 
+     {
+    	 List<ArrayList> result=new ArrayList<ArrayList>();
+         int[] n=new int[nums.length];
+         subsets(0,nums,n,result);
+         return checkDup(result);
+     }
+     
+     private static List<ArrayList> checkDup(List<ArrayList> result)
+     {
+    	 Set<String> set=new HashSet<String>();
+    	 List<ArrayList> result2=new ArrayList<ArrayList>();
+    	 for(int i=0;i<result.size();i++)
+    	 {
+    		 List<Integer> temp=result.get(i);
+    		 String num2="";
+    		 if(temp.size()>0)
+    		 {
+    			 int[] num=new int[temp.size()];
+    			 for(int k=0;k<temp.size();k++)
+    				 num[k]=temp.get(k);
+    			 Arrays.sort(num);
+    			 for(int k=0;k<temp.size();k++)
+    				 num2+=String.valueOf(num[k]);
+    			 if(!set.contains(num2))
+    			 {
+    				 set.add(num2);
+    				 result2.add((ArrayList) temp);
+    			 }
+    		 }
+    		 else
+    			 result2.add((ArrayList) temp);
+    	 }
+    	 return result2;
+     }
+     
+     //leetcode80
+     public static int removeDuplicates(int[] nums) 
+     {
+    	   int i=0;
+    	   for(int n:nums)
+    	   {
+    		   if(i<2||n>nums[i-2])
+    			   nums[i++]=n;
+    	   }
+    	   return i;
+    }
+     
+     //leetcode67
+     public static String addBinary(String a, String b) 
+     {
+    	 StringBuilder s=new StringBuilder();
+    	 int i=a.length()-1;
+    	 int j=b.length()-1;
+    	 int carry=0;
+    	 while(i>=0||j>=0)
+    	 {
+    		 int sum=carry;
+    		 if(j>=0)
+    			 sum+=b.charAt(j--)-'0';
+    		 if(i>=0)
+    			 sum+=a.charAt(i--)-'0';
+    		 s.append(sum%2);
+    		 carry=sum/2;
+    	 }
+    	 if(carry>0)
+    		 s.append(carry);
+    	 return s.reverse().toString();
+     }
+     
+     //leetcode69
+     public static int mySqrt(int x) 
+     {
+    	 long i;
+         for(i=1;i<=x;i++)
+         {
+        	 if(i*i>x)
+        		 break;
+        	 if(i*i==x)
+        		 return (int) i;
+         }
+         return (int) (i-1);
+     }
+     
+     //leetcode88
+     public static void merge(int[] nums1, int m, int[] nums2, int n) 
+     {
+    	 if(m==0&&n==0)
+    		 return;
+    	 else if(m==0)
+    	 {
+    		 for(int i=0;i<n;i++)
+    			 nums1[i]=nums2[i];
+    		 return;
+    	 }
+    	 else if(n==0)
+    		 return;
+    	 int p=m-1;
+    	 int q=n-1;
+         for(int i=(m+n)-1;i>=0;i--)
+         {
+        	 if(p>=0&&q>=0)
+        	 {
+        	 if(nums1[p]>nums2[q])
+        	 {
+        		 nums1[i]=nums1[p];
+        		 p--;
+        	 }
+        	 else if(nums1[p]<=nums2[q])
+        	 {
+        		 nums1[i]=nums2[q];
+        		 q--;
+        	 }
+        	 }     	 
+        	 else if(q!=0)
+        	 {
+        		 //System.out.println("Come in!");
+        		 for(int k=0;k<=q;k++)
+        		 {
+        			 nums1[k]=nums2[k];
+        		// System.out.print(nums1[k]+" ");
+        		 }
+        		 return;
+        	 }
+        	 else 
+        	 {
+        		 nums1[0]=nums1[0]<nums2[0]?nums1[0]:nums2[0];
+        		 return;
+        	 }
+     }
+     }
+     
+     //leetcode76**   
+     public static String minWindow(String s, String t) {  
+         if (s == null || t == null || s.length() < t.length())  
+             return "";  
+         // HashMap的key为t中各个字符，value为对应字符个数  
+         Map<Character, Integer> map = new HashMap<Character, Integer>();  
+         for (char c : t.toCharArray()) 
+         {  
+             if (!map.containsKey(c))  
+                 map.put(c, 0);  
+             map.put(c, map.get(c) + 1);  
+         }  
+         // minLeft为最小窗口左下标，minLen为最小长度，count用来计数  
+         int minLeft = 0, minLen = s.length() + 1, count = 0;  
+         int left = 0;  
+         for (int i = 0; i < s.length(); i++) {  
+             char c = s.charAt(i);  
+             if (map.containsKey(c)) {  
+                 // 如果map.get(c)说明t中还有字符没有包含，计数器+1  
+                 if (map.get(c) > 0){  
+                     count++;  
+                 }  
+                 map.put(c, map.get(c) - 1);  
+             }  
+             
+             // 如果left到i中包含t中所有字符  
+             while (count == t.length()) 
+             {  
+                 if (i - left + 1 < minLen) 
+                 {  
+                     minLeft = left;  
+                     minLen = i - left + 1;  
+                 }  
+                 c = s.charAt(left);  
+                 if (map.containsKey(c)) 
+                 {  
+                     map.put(c, map.get(c) + 1);  
+                     if (map.get(c) > 0)  
+                         count--;  
+                 }  
+                 left++;  
+             }  
+         }  
+         if (minLen > s.length())  
+             return "";  
+   
+         return s.substring(minLeft, minLeft + minLen);  
+     } 
+     
+     //leetcode68
+     public static List<String> fullJustify(String[] words, int maxWidth) 
+     {
+    	 List<String> lines=new ArrayList<String>();
+    	 int index=0;
+         StringBuilder sb=new StringBuilder();
+         while(index<words.length)
+         {
+        	 int count=words[index].length();
+        	 int last=index+1;
+        	 while(last<words.length)
+        	 {
+        		 if(words[last].length()+count+1>maxWidth)
+        			 break;
+        		 count+=words[last].length()+1;
+        		 last++;
+        	 }    
+             int diff=last-index-1;
+             if(last==words.length||diff==0)
+             {
+            	 for(int i=index;i<last;i++)
+            		 sb.append(words[i]+" ");
+            	 sb.deleteCharAt(sb.length()-1);
+            	 for(int i=sb.length();i<maxWidth;i++)
+            		 sb.append(" ");
+             }
+             else
+             {
+            	 int spaces=(maxWidth-count)/diff;
+            	 int r=(maxWidth-count)%diff;
+            	 for(int i=index;i<last;i++)
+            	 {
+            		 sb.append(words[i]);
+            		 if(i<last-1)
+            		 {
+            			 for(int j=0;j<=(spaces+((i-index)<r?1:0));j++)
+            				 sb.append(" ");
+            		 }
+            	 }
+             }
+             lines.add(sb.toString());
+             index=last;
+         }
+             return lines;
+     }
+     
+     class TreeNode
+{
+	int val;
+	TreeNode left;
+	TreeNode right;
+	
+	TreeNode(int x)
+	{
+		val=x;
+	}
+}
