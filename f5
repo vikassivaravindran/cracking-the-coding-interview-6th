@@ -1,0 +1,336 @@
+//leetcode102
+	public List<ArrayList<Integer>> levelOrder(TreeNode root) 
+    {
+        List<ArrayList<Integer>> result=new ArrayList<ArrayList<Integer>>();
+    	if(root==null)
+    		return result;
+    	Queue<TreeNode> queue=new LinkedList<TreeNode>();
+    	queue.add(root);
+    	while(!queue.isEmpty())
+    	{
+    		List<Integer> l=new ArrayList<Integer>();
+    	int levelNum=queue.size();
+    	for(int i=0;i<levelNum;i++)
+    	{
+    		TreeNode temp=queue.peek();
+    		if(temp.left!=null)
+    			queue.add(temp.left);
+    		if(temp.right!=null)
+    			queue.add(temp.right);
+    		l.add(temp.val);
+            queue.poll();
+    	}
+    	result.add((ArrayList<Integer>) l);
+    	}
+    	return result;
+    }
+   
+	//leetcode117
+	public static List<List<TreeLinkNode>> levelOrder(TreeLinkNode root) {
+    	List<List<TreeLinkNode>> result=new ArrayList<List<TreeLinkNode>>();
+    	if(root==null)
+    		return result;
+    	Queue<TreeLinkNode> queue=new LinkedList<TreeLinkNode>();
+    	queue.add(root);
+    	while(!queue.isEmpty())
+    	{
+    		List<TreeLinkNode> l=new ArrayList<TreeLinkNode>();
+    	int levelNum=queue.size();
+    	for(int i=0;i<levelNum;i++)
+    	{
+    		TreeLinkNode temp=queue.peek();
+    		if(temp.left!=null)
+    			queue.add(temp.left);
+    		if(temp.right!=null)
+    			queue.add(temp.right);
+    		l.add(temp);
+    		queue.poll();
+    	}
+    	result.add((ArrayList<TreeLinkNode>) l);
+    	}
+    	return result;
+    }
+    
+    //leetcode117
+     public void connect(TreeLinkNode root) 
+     {
+    	 if(root==null)
+    		 return;
+    	 List<List<TreeLinkNode>> result=levelOrder(root);
+    	 for(int i=0;i<result.size();i++)
+    	 {
+    		 List<TreeLinkNode> temp=result.get(i);
+    		 for(int j=0;j<temp.size()-1;j++)
+    			 temp.get(j).next=temp.get(j+1);
+    		 temp.get(temp.size()-1).next=null;
+    	 }
+     }
+     
+     //leetcode127**BFS
+     private int calDiff(String currentWord,String endWord){
+         int diff = 0;
+         for(int i=0;i<currentWord.length();i++){
+             if(currentWord.charAt(i) != endWord.charAt(i)) diff++;
+             if(diff == 2) break;
+         }
+         return diff;
+     }
+     public int ladderLength(String beginWord, String endWord, List<String> wordList) {
+         HashMap<String,Boolean> visited = new HashMap<String,Boolean>();
+         HashSet<String> set2=new HashSet<String>();
+          for(int i=0;i<wordList.size();i++)
+         	 set2.add(wordList.get(i));
+          if(!set2.contains(endWord))
+         	 return 0;
+         Queue<String> tmp = new LinkedList<String>();
+         Queue<Integer> steps = new LinkedList<Integer>();
+         tmp.add(beginWord);
+         steps.add(1);
+         //  采用BFS
+         while(tmp.isEmpty() == false){
+             String currentWord = tmp.poll();
+             char[] currentChars = currentWord.toCharArray();
+             int currentLen = steps.poll();
+             int diff = this.calDiff(currentWord,endWord);
+               // 首先判别能否直接变换到目标结果
+             if(diff < 2){
+                 return diff + currentLen;
+             }
+             //直接替换每个位置的字符，然后进行比较
+             for(int i=0;i<currentWord.length();i++){
+                 char mychar = currentChars[i];
+                 for(char j='a';j<='z';j++){
+                     if(mychar == j) continue;
+                     currentChars[i] = j;
+                     String nextString =new String(currentChars);
+                     if(wordList.contains(nextString) && visited.containsKey(nextString) == false){
+                         visited.put(nextString,true);
+                         tmp.add(nextString);
+                         steps.add(currentLen + 1);
+                     }
+                     currentChars[i] = mychar;
+                 }
+             }
+
+
+         }
+         return 0;
+     }
+     
+     //leetcode133
+     private HashMap<Integer, UndirectedGraphNode> map = new HashMap<Integer, UndirectedGraphNode>();
+     public UndirectedGraphNode cloneGraph(UndirectedGraphNode node) {
+         return clone(node);
+     }
+
+     private UndirectedGraphNode clone(UndirectedGraphNode node) {
+         if (node == null) return null;
+         
+         if (map.containsKey(node.label)) {
+             return map.get(node.label);
+         }
+         UndirectedGraphNode clone = new UndirectedGraphNode(node.label);
+         map.put(clone.label, clone);
+         for (UndirectedGraphNode neighbor : node.neighbors) {
+             clone.neighbors.add(clone(neighbor));
+         }
+         return clone;
+     }
+     
+     //leetcode139
+     public static boolean wordBreak(String s, List<String> wordDict) 
+     {
+    	 Set<String> ss=new HashSet<String>();
+    	 for(int i=0;i<wordDict.size();i++)
+    	 {
+    		 if(!ss.contains(wordDict.get(i)))
+    			 ss.add(wordDict.get(i));
+    	 }
+         boolean[] f=new boolean[s.length()+1];
+         f[0]=true;
+         for(int i=1;i<=s.length();i++)
+        	 for(int j=0;j<i;j++)
+        	 {
+        		 if(f[j]&&ss.contains(s.substring(j,i)))
+        		 {
+        			 f[i]=true;
+        			 break;
+        		 }
+        	 }
+         return f[s.length()];
+     }
+     
+     //leetcode121
+     public static int maxProfit(int[] prices) 
+     {
+    	 if(prices.length<1)
+             return 0;
+    	 int maxPro=0;
+         int min=prices[0];
+         for(int i=1;i<prices.length;i++)
+         {
+        	 if(prices[i]<min)
+        	 {
+        		 min=prices[i];
+        	 }
+        	 else
+        	 {
+        		 maxPro=Math.max(maxPro, prices[i]-min);
+        	 }
+         }
+         return maxPro;
+     }
+     
+     //leetcode125
+     public static boolean isPalindrome(String s) 
+     {
+         if(s==null||s.length()==0)
+        	 return true;
+         String ss = s.replaceAll("[^A-Za-z0-9]", "").toLowerCase();
+         char[] c=ss.toLowerCase().toCharArray();
+         int start=0;
+         int end=c.length-1;
+         while(start<end)
+         {
+        	 if(c[start]!=c[end])
+        	 {
+        		 return false;
+        	 }
+        	 start++;
+        	 end--;
+         }
+         return true;
+     }
+     
+     //leetcode128**
+     public static int longestConsecutive(int[] nums)
+     {
+    	 Arrays.sort(nums);
+    	 if(nums.length==0||nums.length==1)
+    		 return nums.length;
+         int res=0;
+         HashMap<Integer,Integer> map=new HashMap<Integer,Integer>();
+         for(int n:nums)
+         {
+        	 if(!map.containsKey(n))
+        	 {
+        		 int left=(map.containsKey(n-1))?map.get(n-1):0;
+        		 int right=(map.containsKey(n+1))?map.get(n+1):0;
+        		 int sum=left+right+1;
+        		 map.put(n, sum);
+        		 res=Math.max(res, sum);
+        		 map.put(n-left, sum);
+        		 map.put(n+right, sum);
+        	 }
+        	 else
+        		 continue;
+         }
+         return res;
+     }
+     
+     //leetcode85**
+     public static int maximalRectangle(char[][] matrix) 
+     {
+    	 int rowNum=matrix.length;  
+         if(rowNum==0)  
+             return 0;  
+         int columnNum=matrix[0].length;  
+           
+           
+         int[][] height=new int[rowNum][columnNum+1];  
+         int maxarea=0;  
+           
+         for(int i=0;i<rowNum;i++)  
+         {  
+             for(int j=0;j<columnNum;j++)  
+             {  
+                 int k=i;  
+                 height[i][j]=0;  
+                 while(k>=0&&j<columnNum)  
+                 {  
+                     if(matrix[k][j]=='1')  
+                         height[i][j]++;  
+                     else   
+                        break;     
+                     k--;  
+                 }  
+                   
+             }  
+             height[i][columnNum]=-1;  
+         }  
+           
+         Stack<Integer> stack=new Stack<Integer>();  
+         for(int i=0;i<rowNum;i++)  
+         {  
+             for(int j=0;j<=columnNum;j++)  
+             {  
+                 int a=height[i][j];  
+                 int b=stack.isEmpty()?-1:stack.peek();  
+                 if(stack.isEmpty()||height[i][j]>=height[i][stack.peek()])  
+                     stack.push(j);  
+                 else   
+                 {  
+                      
+                      
+                        int tempPop=stack.pop();  
+                        maxarea=Math.max(maxarea, height[i][tempPop]*(stack.isEmpty()?j:j-1-stack.peek()));  
+                        j--;  
+                 }  
+             }  
+             stack.clear();  
+         }  
+           
+         return maxarea;  
+     }
+     
+     //leetcode157
+    /* public static int read(char[] buf, int n)
+     {
+      	char[] tmp = new char[4];
+      	boolean eof = false;
+      	int num = 0;
+      	while(num < n && eof == false){
+      		int size = read4(tmp);
+      		if(size < 4) eof = true;
+      		int len = Math.min(n - num, size);
+      		System.arraycopy(tmp, 0, buf, num, len);
+      		num += len;
+      	}
+      	return num;
+      }*/
+      
+      
+class TreeNode
+{
+	int val;
+	TreeNode left;
+	TreeNode right;
+	
+	TreeNode(int x)
+	{
+		val=x;
+	}
+}
+
+class TreeLinkNode
+{
+	int val;
+	TreeLinkNode left;
+	TreeLinkNode right;
+	TreeLinkNode next;
+	
+	TreeLinkNode(int x)
+	{
+		val=x;
+	}
+}
+
+class UndirectedGraphNode {
+     int label;
+     List<UndirectedGraphNode> neighbors;
+     UndirectedGraphNode(int x) 
+     { 
+    	 label = x; 
+    	 neighbors = new ArrayList<UndirectedGraphNode>(); 
+     }
+}
