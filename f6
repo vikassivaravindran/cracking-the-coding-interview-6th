@@ -1,0 +1,254 @@
+//leetcode200
+	public static char[][] g;
+    public static int numIslands(char[][] grid) 
+    {
+        g=grid;
+        int count=0;
+        for(int i=0;i<grid.length;i++)
+        	for(int j=0;j<grid[0].length;j++)
+        		count+=sink(i,j);
+        return count;
+    }
+    
+    private static int sink(int i,int j)
+    {
+    	if(i<0||i>=g.length||j<0||j>=g[0].length||g[i][j]=='0')
+    		return 0;
+    	g[i][j]='0';
+    	sink(i-1,j);
+    	sink(i+1,j);
+    	sink(i,j-1);
+    	sink(i,j+1);
+    	return 1;
+    }
+
+    //leetcode161
+    public static boolean isOneEditDistance(String s,String t)
+    {
+    	int diff=Math.abs(s.length()-t.length());
+    	if(diff>1)
+    		return false;
+    	if(diff==0)
+    	{
+    		for(int i=0;i<s.length();i++)
+    		{
+    			if(s.charAt(i)!=t.charAt(i))
+    				return false;
+    		}
+    		return true;
+    	}
+    	else
+    	{
+    		if(s.length()>t.length())
+    			return s.substring(0,s.length()-1).equals(t);
+    		else
+    			return t.substring(0,t.length()-1).equals(s);
+    	}
+    }
+    
+    //leetcode168
+    public static String convertToTitle(int n) 
+    {
+    	if(n<0)
+    		return null;
+        if(n<=26&&n>0)
+        	return String.valueOf((char)(65+n-1));
+        if(n==0)
+        	return "Z";
+        if(n%26==0)
+            return convertToTitle(n/26-1)+convertToTitle(n%26);
+        else
+        	return convertToTitle(n/26)+convertToTitle(n%26);
+    }
+    
+    //leetcode234
+    public static boolean isPalindrome(ListNode head) 
+    {
+    	if(head==null||head.next==null)
+    		return true;
+        Stack<Integer> s=new Stack<Integer>();
+        ListNode h=new ListNode(0);
+        h.next=head;
+        while(head!=null)
+        {
+        	s.push(head.val);
+        	head=head.next;
+        }
+        head=h.next;
+        while(head!=null)
+        {
+        	if(head.val!=s.pop())
+        		return false;
+        	head=head.next;
+        }
+        return true;
+    }
+    
+    //leetcode206
+    public static ListNode reverseList(ListNode head) 
+    {
+    	if(head==null||head.next==null)
+    		return head;
+        ListNode cur=head;
+        ListNode pre=head.next;
+        ListNode front=pre;
+        cur.next=null;
+        while(front!=null)
+        {
+           front=pre.next;
+           pre.next=cur;
+           cur=pre;
+           pre=front;
+        }
+        return cur;
+    }
+    
+    //leetcode173
+class BSTIterator {
+    Stack <TreeNode> s;
+    public BSTIterator(TreeNode root) 
+    {
+    	s=new Stack<TreeNode>();
+        TreeNode cur=root;
+        while(cur!=null)
+        {
+        	s.push(cur);
+        	if(cur.left!=null)
+        		cur=cur.left;
+        	else
+        		break;
+        }
+    }
+
+    /** @return whether we have a next smallest number */
+    public boolean hasNext() 
+    {
+        return !s.isEmpty();
+    }
+
+    /** @return the next smallest number */
+    public int next() 
+    {
+        TreeNode node=s.pop();
+        TreeNode cur=node;
+        if(cur.right!=null)
+        {
+        	cur=cur.right;
+        	while(cur!=null)
+        	{
+        		s.push(cur);
+        		if(cur.left!=null)
+        			cur=cur.left;
+        		else
+        			break;
+        	}
+        }
+        return node.val;
+    }
+}
+
+class TreeNode
+{
+	int val;
+	TreeNode left;
+	TreeNode right;
+	
+	TreeNode(int x)
+	{
+		val=x;
+	}
+}
+
+//leetcode208
+class Trie {
+    char c;
+    private TrieNode root;
+    /** Initialize your data structure here. */
+    public Trie() 
+    {
+        root=new TrieNode();
+        root.val=' ';
+    }
+    
+    /** Inserts a word into the trie. */
+    public void insert(String word) 
+    {
+    	TrieNode ws=root;
+    	if(word==null||word.length()==0)
+    		return ;
+        for(int i=0;i<word.length();i++)
+        {
+        	char temp=word.charAt(i);
+        	if(ws.childern[temp-'a']==null)
+        		ws.childern[temp-'a']=new TrieNode(temp);
+        	ws=ws.childern[temp-'a'];
+        } 
+        ws.isWord=true;
+    }
+    
+    /** Returns if the word is in the trie. */
+    public boolean search(String word) 
+    {
+        TrieNode ws=root;
+        for(int i=0;i<word.length();i++)
+        {
+        	char temp=word.charAt(i);
+        	if(ws.childern[temp-'a']==null)
+        	       return false;
+        	ws=ws.childern[temp-'a'];
+        }
+        return ws.isWord;
+    }
+    
+    /** Returns if there is any word in the trie that starts with the given prefix. */
+    public boolean startsWith(String prefix) 
+    {
+    	TrieNode ws=root;
+        for(int i=0;i<prefix.length();i++)
+        {
+        	char temp=prefix.charAt(i);
+        	if(ws.childern[temp-'a']==null)
+        	       return false;
+        	ws=ws.childern[temp-'a'];
+        }
+        return true;
+    }
+}
+
+class TrieNode
+{
+	public char val;
+	boolean isWord=false;
+	TrieNode[] childern=new TrieNode[26];
+	public TrieNode()
+	{
+		
+	}
+	public TrieNode(char x)
+	{
+		TrieNode c=new TrieNode();
+		c.val=x;
+	}
+}
+class TreeLinkNode
+{
+	int val;
+	TreeLinkNode left;
+	TreeLinkNode right;
+	TreeLinkNode next;
+	
+	TreeLinkNode(int x)
+	{
+		val=x;
+	}
+}
+
+class UndirectedGraphNode {
+     int label;
+     List<UndirectedGraphNode> neighbors;
+     UndirectedGraphNode(int x) 
+     { 
+    	 label = x; 
+    	 neighbors = new ArrayList<UndirectedGraphNode>(); 
+     }
+}
