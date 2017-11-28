@@ -1,0 +1,184 @@
+//leetcode283
+    public static void moveZeroes(int[] nums) 
+    {
+        int start=0;
+        int end=nums.length-1;
+        while(start<end)
+        {
+        	if(nums[end]==0)
+        		end--;
+        	if(nums[start]==0)
+        	{
+        		for(int j=start;j<end;j++)
+        		{
+        			nums[j]=nums[j+1];
+        		}
+        		nums[end]=0;
+        	}
+        	if(nums[start]!=0)
+        		start++;
+        }
+    }
+    
+    //leetcode404
+    public static int sumOfLeftLeaves(TreeNode root) 
+    {
+    	if(root == null) return 0;
+        int ans = 0;
+        if(root.left != null) {
+            if(root.left.left == null && root.left.right == null) ans += root.left.val;
+            else ans += sumOfLeftLeaves(root.left);
+        }
+        ans += sumOfLeftLeaves(root.right);
+        
+        return ans;
+    }
+    
+    //leetcode238
+    public static int[] productExceptSelf(int[] nums) 
+    {
+    	int n=nums.length;
+        int[] result=new int[nums.length];
+        result[0]=1;
+        for(int i=1;i<n;i++)
+        	result[i]=result[i-1]*nums[i-1];
+        int right=1;
+        for(int i=n-1;i>=0;i--)
+        {
+        	result[i]*=right;
+        	right*=nums[i];
+        }
+        return result;
+    }
+    
+    //leetcode274**
+    public static int hIndex(int[] citations) 
+    {
+        int n=citations.length;
+        int[] buckets=new int[n+1];
+        for(int c:citations)
+        {
+        	if(c>=n)
+        		buckets[n]++;
+        	else
+        	    buckets[c]++;
+        }
+        int count=0;
+        for(int i=n;i>=0;i++)
+        {
+        	count+=buckets[i];
+        	if(count>=i)
+        		return i;
+        }
+        return 0;
+    }
+    
+    //leetcode 275
+    public static int hIndex2(int[] citations) 
+    {
+    	int len=citations.length;
+        int low=0;
+        int high=citations.length-1;
+        while(low<=high)
+        {
+        	int mid=(high+low)/2;
+        	if(citations[mid]==(len-mid))
+        		return len-mid;
+        	else if(citations[mid]<len-mid)
+        		low=mid+1;
+        	else
+        		high=mid-1;
+        }
+        return len-low;
+    }
+    
+    //leetcode253
+    public int minMeetingRooms(Interval[] intervals)
+    {
+    	if(intervals==null||intervals.length==0)
+    		return 0;
+    	Arrays.sort(intervals,new Comparator<Interval>(){
+    		public int compare(Interval i1,Interval i2)
+    		{
+    			if(i1.start!=i2.start)
+    				return i1.start-i2.start;
+    			else
+    				return i1.end-i2.end;
+    		}
+    	});
+    	int result=0;
+    	PriorityQueue<Integer> pq=new PriorityQueue<Integer>();
+    	for(int i=0;i<intervals.length;i++)
+    	{
+    		pq.add(intervals[i].end);
+    		while(pq.size()>0&&intervals[i].start>=pq.peek())
+    			pq.remove();
+    		result=Math.max(result, pq.size());
+    	}
+    	return result;
+    }
+    
+    //leetcode261**BFS
+    public boolean validTree(int n, int[][] edges) {
+        if (n == 0)
+            return false;
+        // number of nodes must be equal to num of edges+1, to have no loop
+        if (n-1 != edges.length)  
+            return false;
+        // have to parse the nodes and edges into a graph
+        // <Node, Set of neighbors>
+        Map<Integer, Set<Integer>> graph = initializeGraph(n, edges);
+        Queue<Integer> toVisit = new LinkedList<Integer>();
+        Set<Integer> visited = new HashSet<Integer>();
+        toVisit.offer(0);
+        visited.add(0);
+        while (!toVisit.isEmpty()) {
+            int node = toVisit.poll();
+            // traverse all the neighbors of a node
+            for (int neighbor : graph.get(node)) {
+                if (visited.contains(neighbor)) // if the neighbors has been visited ignore
+                    continue;
+                toVisit.offer(neighbor);    // otherwise, add them to the queue
+                visited.add(neighbor);
+            }
+        }
+        // num of nodes visited must equal amount of nodes given
+        return (visited.size() == n);
+    }
+    // helper function to parse and create the graph
+    private Map<Integer, Set<Integer>> initializeGraph(int n, int[][] edges) {
+        Map<Integer, Set<Integer>> graph = new HashMap<Integer, Set<Integer>>();
+        // initialzie the sets of neighbors of each node
+        for (int i = 0; i < n; i++) {
+            graph.put(i, new HashSet<Integer>());
+        }
+        // go through the edges and add corresponding neighbors
+        for (int i = 0; i < edges.length; i++) {
+            int u = edges[i][0];
+            int v = edges[i][1];
+            graph.get(u).add(v);
+            graph.get(v).add(u);
+        }
+        return graph;
+    }
+    
+    class TreeNode {
+	 int val;
+	 TreeNode left;
+	 TreeNode right;
+	 TreeNode(int x) 
+	 { 
+		 val = x; 
+	 }
+}
+
+class Interval {
+	 int start;
+	 int end;
+	 Interval() { start = 0; end = 0; }
+	 Interval(int s, int e) 
+	 { 
+		 start = s; 
+		 end = e; 
+	 }
+}
