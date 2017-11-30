@@ -1,0 +1,225 @@
+//leetcode461
+    public static int hammingDistance(int x, int y) 
+    {
+        int c=x^y;
+        int count=0;
+        String s=Integer.toBinaryString(c);
+        for(int i=0;i<s.length();i++)
+        {
+        	if(s.charAt(i)=='1')
+        		count++;
+        }
+        return count;
+    }
+    
+    //leetcode543**
+    int max = 0;
+    
+    public int diameterOfBinaryTree(TreeNode root) {
+        maxDepth(root);
+        return max;
+    }
+    
+    private int maxDepth(TreeNode root) {
+        if (root == null) return 0;
+        
+        int left = maxDepth(root.left);
+        int right = maxDepth(root.right);
+        
+        max = Math.max(max, left + right);
+        
+        return Math.max(left, right) + 1;
+    }
+    
+    //leetcode277
+   /* public int findCelebrity(int n)
+    {
+    	if(n<=0)
+    		return -1;
+    	if(n==1)
+    		return 0;
+    	Stack<Integer> s=new Stack<Integer>();
+    	boolean is=true;
+    	for(int i=0;i<n;i++)
+    		s.push(i);
+    	while(s.size()>1)
+    	{
+    		int i=s.pop();
+    		int j=s.pop();
+    		if(knows(i,j))
+    			s.push(j);
+    		else
+    			s.push(i);
+    	}
+    	while(!s.isEmpty())
+    	{
+    		int j=s.peek();
+    	for(int i=0;i<n;i++)
+    	{
+    		if(i!=j)
+    		{
+    			if(knows(j,i)||!knows(i,j))
+    			{
+    				s.pop();
+    				is=false;
+    				break;
+    			}
+    		}
+    		if(is)
+    			return j;
+    	}
+    	}
+    	return -1;
+    }*/
+    
+    //leetcode285
+    public static TreeNode inorder(TreeNode root,TreeNode p)
+    {
+    	TreeNode node=root;
+    	TreeNode result=null;
+    	
+    	while(node!=null)
+    	{
+    		if(node.val>p.val)
+    		{
+    			result=node;
+    			node=node.left;
+    		}
+    		else
+    			node=node.right;
+    	}
+    	
+    	return result;
+    }
+    
+    //leetcode286***dp
+    public void walssAndGates(int[][] rooms)
+    {
+    	if(rooms==null||rooms.length==0||rooms[0]==null||rooms[0].length==0)
+    		return ;
+    	int m=rooms.length;
+    	int n=rooms[0].length;
+    	boolean[][] visited=new boolean[m][n];
+    	for(int i=0;i<m;i++)
+    		for(int j=0;j<n;j++)
+    		{
+    			if(rooms[i][j]==Integer.MAX_VALUE)
+    				rooms[i][j]=search(rooms,visited,i,j,m,n);
+    		}
+    }
+    
+    private static int search(int[][] rooms,boolean[][] visited,int i,int j,int m,int n)
+    {
+    	if(i<0||j<0||i>(m-1)||j>(n-1)||rooms[i][j]==(-1))
+    		return Integer.MAX_VALUE;
+    	if(rooms[i][j]==0)
+    		return 0;
+    	if(visited[i][j])
+    		return rooms[i][j];
+    	visited[i][j]=true;
+    	if(rooms[i][j]>0&&rooms[i][j]<Integer.MAX_VALUE)
+    		return rooms[i][j];
+    	int up=search(rooms,visited,i-1,j,m,n);
+    	int down=search(rooms,visited,i+1,j,m,n);
+    	int left=search(rooms,visited,i,j-1,m,n);
+    	int right=search(rooms,visited,i,j+1,m,n);
+    	visited[i][j]=false;
+    	int min=Math.min(Math.min(up, down), Math.min(left,right));
+    	return min==Integer.MAX_VALUE?min:min+1;
+    }
+    
+    //leetcode311
+    public static int[][] multiply(int[][] a,int[][] b)
+    {
+    	if(a==null||b==null)
+    		return null;
+    	int m=a.length;
+    	int n=b[0].length;
+    	if(m==0||n==0)
+    		return null;
+    	int[][] result=new int[m][n];
+    	Arrays.fill(result, 0);
+    	for(int i=0;i<m;i++)
+    		for(int j=0;j<a[0].length;j++)
+    		{
+    			if(a[i][j]==0)
+    				continue;
+    			for(int k=0;k<n;k++)
+    			{
+    				if(b[j][k]==0)
+    					continue;
+    				result[i][k]+=(b[j][k]*a[i][j]);
+    			}
+    		}
+    	return result;
+    }
+    
+    //leetcode314
+    public static List<ArrayList<Integer>> verticalOrder(TreeNode root) 
+    {
+    	TreeMap<Integer,ArrayList<Integer>> map=new TreeMap<Integer,ArrayList<Integer>>();
+    	List<ArrayList<Integer>> l=new ArrayList<ArrayList<Integer>>();
+    	if(root==null)
+    		return l;
+    	putKey(root,0,map);
+    	for(Map.Entry<Integer, ArrayList<Integer>> entry:map.entrySet())
+    	{
+    		l.add(map.get(entry.getKey()));
+    	}
+    	return l;
+    }
+    
+    public static void putKey(TreeNode root,int key,TreeMap<Integer,ArrayList<Integer>> map)
+    {
+    	if(root==null)
+    		return;
+    	if(!map.containsKey(key))
+    	{
+    		List<Integer> temp=new ArrayList<Integer>();
+    		temp.add(root.val);
+    		map.put(key, (ArrayList<Integer>) temp);
+    	}
+    	else
+    	{
+    		map.get(key).add(root.val);
+    	}
+    	putKey(root.left,key-1,map);
+    	putKey(root.right,key+1,map);
+    }
+    
+    //leetcode265
+    public static int minCost(int[][] costs)
+    {
+    	if(costs==null||costs.length==0)
+    		return 0;
+    	int len=costs.length;
+    	int k=costs[0].length;
+    	int min1=0;
+    	int min2=0;
+    	int pre_min1,pre_min2;
+    	int[] dp=new int[k];
+    	for(int i=0;i<len;i++)
+    	{
+    		pre_min1=min1;
+    		pre_min2=min2;
+    		min1=Integer.MAX_VALUE;
+    		min2=Integer.MAX_VALUE;
+    		for(int j=0;j<k;j++)
+    		{
+    			if(dp[j]!=pre_min1||pre_min1==pre_min2)
+    				dp[j]=pre_min1+costs[i][j];
+    			else
+    				dp[j]=pre_min2+costs[i][j];
+    			if(dp[j]<=min1)
+    			{
+    				min2=min1;
+    				min1=dp[j];
+    			}
+    			else if(dp[j]<min2)
+    			{
+    				min2=dp[j];
+    			}
+    		}
+    	}
+    	return min1;
+    }
