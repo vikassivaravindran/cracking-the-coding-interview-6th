@@ -1,0 +1,239 @@
+//leetcode334
+    public static boolean increasingTriplet(int[] nums) 
+    {
+        int min=Integer.MAX_VALUE;
+        int secondMin=Integer.MAX_VALUE;
+        for(int num:nums)
+        {
+        	if(num<=min)
+        		min=num;
+        	else if(num<secondMin)
+        		secondMin=num;
+        	else if(num>secondMin)
+        		return true;
+        }
+        return false;
+    }
+    
+    //leetcode377**
+    public int combinationSum4(int[] nums, int target) 
+    {
+        int[] comb=new int[target+1];
+        comb[0]=1;
+        for(int i=0;i<comb.length;i++)
+           for(int j=0;j<nums.length;j++)
+           {
+        	   if(i-nums[j]>0)
+        		   comb[i]+=comb[i-nums[j]];
+           }
+        
+        return comb[target];
+    }
+    
+    //leetcode477
+    public static int totalHammingDistance(int[] nums) 
+    {
+        int total=0;
+        int n=nums.length;
+        for(int i=0;i<32;i++)
+        {
+        	int bitCount=0;
+        	for(int j=0;j<n;j++)
+        		bitCount+=(nums[j]>>i&1);
+        	total+=bitCount*(n-bitCount);
+        }
+        return total;
+    }
+    
+    //leetcode494***
+    public static int findTargetSumWays(int[] nums, int s) 
+    {
+        int sum=0;
+        for(int i:nums)
+        	sum+=i;
+        if(s>sum||s<-sum)
+        	return 0;
+        int[] dp=new int[2*sum+1];
+        dp[0+sum]=1;
+        for(int i=0;i<nums.length;i++)
+        {
+        	int[] next=new int[2*sum+1];
+        	for(int k=0;k<next.length;k++)
+        	{
+        		if(dp[k]!=0)
+        		{
+        			next[k+nums[i]]+=dp[k];
+        			next[k-nums[i]]+=dp[k];
+        		}
+        	}
+        	dp=next;
+        }
+        return dp[sum+s];
+    }
+    
+    //leetcode523***
+    public static boolean checkSubarraySum(int[] nums, int k) 
+    {
+    	Map<Integer, Integer> map = new HashMap<Integer, Integer>(){{put(0,-1);}};;
+        int runningSum = 0;
+        for (int i=0;i<nums.length;i++) {
+            runningSum += nums[i];
+            if (k != 0) runningSum %= k; 
+            Integer prev = map.get(runningSum);
+            if (prev != null) {
+                if (i - prev > 1) return true;
+            }
+            else map.put(runningSum, i);
+        }
+        return false;
+    }
+    
+    //leetcode525**
+    public static int findMaxLength(int[] nums) 
+    {
+    	 for (int i = 0; i < nums.length; i++) {
+             if (nums[i] == 0) 
+            	 nums[i] = -1;
+         }
+         
+         Map<Integer, Integer> sumToIndex = new HashMap<Integer,Integer>();
+         sumToIndex.put(0, -1);
+         int sum = 0, max = 0;
+         
+         for (int i = 0; i < nums.length; i++) {
+             sum += nums[i];
+             if (sumToIndex.containsKey(sum)) {
+                 max = Math.max(max, i - sumToIndex.get(sum));
+             }
+             else {
+                 sumToIndex.put(sum, i);
+             }
+         }
+         
+         return max;
+    }
+    
+    //leetcode380
+class RandomizedSet {
+
+	Set<Integer> set;
+    /** Initialize your data structure here. */
+    public RandomizedSet() 
+    {
+        set=new HashSet<Integer>();
+    }
+    
+    /** Inserts a value to the set. Returns true if the set did not already contain the specified element. */
+    public boolean insert(int val) 
+    {
+        if(set.contains(val))
+        	return false;
+        else
+        	set.add(val);
+        return true;
+    }
+    
+    /** Removes a value from the set. Returns true if the set contained the specified element. */
+    public boolean remove(int val) 
+    {
+        if(set.contains(val))
+        {
+        	set.remove(val);
+        	return true;
+        }
+        else
+        	return false;
+    }
+    
+    /** Get a random element from the set. */
+    public int getRandom() 
+    {
+        int index=(int)(Math.random()*set.size());
+        int[] i=new int[set.size()];
+        Iterator<Integer> ii=set.iterator();
+        int count=0;
+        while(ii.hasNext())
+        {
+        	i[count++]=ii.next();
+        }
+        return i[index];
+    }
+}
+
+//leetcode341
+/*class NestedIterator implements Iterator<Integer> {
+    NestedInteger nextInt;
+    Stack<Iterator<NestedInteger>> stack;
+
+    public NestedIterator(List<NestedInteger> nestedList) {
+        stack = new Stack<Iterator<NestedInteger>>();
+        stack.push(nestedList.iterator());
+    }
+
+    @Override
+    public Integer next() {
+        return nextInt != null ? nextInt.getInteger() : null; //Just in case
+    }
+
+    @Override
+    public boolean hasNext() {
+        while (!stack.isEmpty()) {
+            if (!stack.peek().hasNext()) stack.pop();
+            else if ((nextInt = stack.peek().next()).isInteger()) return true;
+            else stack.push(nextInt.getList().iterator());
+        }
+        return false;
+    }
+}*/
+
+//leetcode398
+class Solution 
+{
+	int[] nums;
+    Random rnd;
+
+    public Solution(int[] nums) {
+        this.nums = nums;
+        this.rnd = new Random();
+    }
+    
+    public int pick(int target) {
+        int result = -1;
+        int count = 0;
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] != target)
+                continue;
+            if (rnd.nextInt(++count) == 0)
+                result = i;
+        }
+        
+        return result;
+    }
+}
+
+class TreeNode 
+{
+	 int val;
+	 TreeNode left;
+	 TreeNode right;
+	 TreeNode(int x) 
+	 { 
+		 val = x; 
+	 }
+}
+
+class Interval {
+	 int start;
+	 int end;
+	 Interval() 
+	 { 
+		 start = 0; 
+		 end = 0; 
+	 }
+	 
+	 Interval(int s, int e) 
+	 { 
+		 start = s; 
+		 end = e; 
+	 }
+}
