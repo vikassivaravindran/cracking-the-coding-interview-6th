@@ -1,0 +1,272 @@
+class Codec2 {
+
+	  private static final String spliter = ",";
+	    private static final String NN = "X";
+
+	    // Encodes a tree to a single string.
+	    public String serialize(TreeNode root) {
+	        StringBuilder sb = new StringBuilder();
+	        buildString(root, sb);
+	        return sb.toString();
+	    }
+
+	    private void buildString(TreeNode node, StringBuilder sb) {
+	        if (node == null) {
+	            sb.append(NN).append(spliter);
+	        } else {
+	            sb.append(node.val).append(spliter);
+	            buildString(node.left, sb);
+	            buildString(node.right,sb);
+	        }
+	    }
+	    // Decodes your encoded data to tree.
+	    public TreeNode deserialize(String data) {
+	        Deque<String> nodes = new LinkedList<>();
+	        nodes.addAll(Arrays.asList(data.split(spliter)));
+	        return buildTree(nodes);
+	    }
+	    
+	    private TreeNode buildTree(Deque<String> nodes) {
+	        String val = nodes.remove();
+	        if (val.equals(NN)) return null;
+	        else {
+	            TreeNode node = new TreeNode(Integer.valueOf(val));
+	            node.left = buildTree(nodes);
+	            node.right = buildTree(nodes);
+	            return node;
+	        }
+	    }
+	}
+
+class Codec {   
+    HashMap<String, Integer> ltos;
+    HashMap<Integer, String> stol;
+    static int COUNTER;
+    String elements;
+    Codec() {
+        ltos = new HashMap<String, Integer>();
+        stol = new HashMap<Integer, String>();
+        COUNTER = 1;
+        elements = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    }
+    public String encode(String url) {
+        String shorturl = base10ToBase62(COUNTER);
+        ltos.put(url, COUNTER);
+        stol.put(COUNTER, url);
+        COUNTER++;
+        return "http://tiny.url/" + shorturl;
+    }
+    public String decode(String url) {
+        url = url.substring("http://tiny.url/".length());
+        int n = base62ToBase10(url);
+        return stol.get(n);
+    }
+    
+    public int base62ToBase10(String s) {
+        int n = 0;
+        for (int i = 0; i < s.length(); i++) {
+            n = n * 62 + convert(s.charAt(i));
+        }
+        return n;
+        
+    }
+    public int convert(char c) {
+        if (c >= '0' && c <= '9')
+            return c - '0';
+        if (c >= 'a' && c <= 'z') {
+            return c - 'a' + 10;
+        }
+        if (c >= 'A' && c <= 'Z') {
+            return c - 'A' + 36;
+        }
+        return -1;
+    }
+    public String base10ToBase62(int n) {
+        StringBuilder sb = new StringBuilder();
+        while (n != 0) {
+            sb.insert(0, elements.charAt(n % 62));
+            n /= 62;
+        }
+        while (sb.length() != 6) {
+            sb.insert(0, '0');
+        }
+        return sb.toString();
+    }
+}
+
+//leetcode325**
+	public int maxSubArrlen(int[] nums,int k)
+	{
+		int maxLen=0;
+		int sum=0;
+		if(nums.length==0)
+			return maxLen;
+		HashMap<Integer,Integer> map=new HashMap<Integer,Integer>();
+		for(int i=0;i<nums.length;i++)
+		{
+			sum+=nums[i];
+			if(sum==k)
+				maxLen=Math.max(maxLen, i+1);
+			int diff=(sum-k);
+			if(map.containsKey(diff))
+				maxLen=Math.max(maxLen, i-map.get(diff));
+			if(!map.containsKey(sum))
+				map.put(sum, i);
+		}
+		return maxLen;
+	}
+	//leetcode554
+    public int leastBricks(List<ArrayList> wall) 
+    {
+    	List<ArrayList> wall2=wall;
+    	HashMap<Integer,Integer> time=new HashMap<Integer,Integer>();
+        for(int i=0;i<wall.size();i++)
+        {
+        	ArrayList<Integer> temp=wall.get(i);
+        	if(temp.size()>1)
+        	{
+        	if(!time.containsKey(temp.get(0)))
+        		time.put(temp.get(0), 1);
+        	else
+        		time.put(temp.get(0), time.get(temp.get(0))+1);
+        	}
+        	for(int j=1;j<temp.size()-1;j++)
+        	{
+        		temp.set(j, temp.get(j)+temp.get(j-1));
+        		if(!time.containsKey(temp.get(j)))
+            		time.put(temp.get(j), 1);
+            	else
+            		time.put(temp.get(j), time.get(temp.get(j))+1);
+        	}
+        	wall.set(i, temp);
+        }
+        int max=0;
+        for(Map.Entry<Integer, Integer> entry:time.entrySet())
+        {
+        	max=Math.max(max, entry.getValue());
+        }
+        return wall.size()-max;
+    }
+    
+    //leetcode282***backtrack
+    public static List<String> addOperators(String num, int target) 
+    {
+        List<String> rst=new ArrayList<String>();
+        if(num==null||num.length()==0)
+        	return rst;
+        helper(rst,"",num,target,0,0,0);
+        return rst;
+    }
+    
+    public static void helper(List<String> rst,String path,String num,int target,int pos,long eval,long multed)
+    {
+    	if(pos==num.length())
+    	{
+    		if(target==eval)
+    			rst.add(path);
+    		return;
+    	}
+    	
+    	for(int i=pos;i<num.length();i++)
+    	{
+    		if(i!=pos&&num.charAt(pos)=='0')
+    			break;
+    		long cur=Long.parseLong(num.substring(pos,i+1));
+    		if(pos==0)
+    			helper(rst,path+cur,num,target,i+1,cur,cur);
+    		else
+    		{
+    			helper(rst,path+"+"+cur,num,target,i+1,eval+cur,cur);
+    			helper(rst,path+"-"+cur,num,target,i+1,eval-cur,-cur);
+    			helper(rst, path + "*" + cur, num, target, i + 1, eval - multed + multed * cur, multed * cur );
+    		}
+    	}
+    }
+    
+    Leetcode534:
+TinyURL
+Data access:
+1.pick a storage structure.
+-need to support transactions? No->NoSQL
+-need rich SQL query? No->NoSQL
+-pursue development effciency?(SQL means fewer codes, many web frameworks support it) NoSQL
+-AUTO_INCREMENT ID?SQL
+-need high performance for QPS? not high->SQL
+-scalability? Not high->SQL
+
+public class URLService {
+    HashMap<String, Integer> ltos;
+    HashMap<Integer, String> stol;
+    static int COUNTER;
+    String elements;
+    URLService() {
+        ltos = new HashMap<String, Integer>();
+        stol = new HashMap<Integer, String>();
+        COUNTER = 1;
+        elements = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    }
+    public String longToShort(String url) {
+        String shorturl = base10ToBase62(COUNTER);
+        ltos.put(url, COUNTER);
+        stol.put(COUNTER, url);
+        COUNTER++;
+        return "http://tiny.url/" + shorturl;
+    }
+    public String shortToLong(String url) {
+        url = url.substring("http://tiny.url/".length());
+        int n = base62ToBase10(url);
+        return stol.get(n);
+    }
+    
+    public int base62ToBase10(String s) {
+        int n = 0;
+        for (int i = 0; i < s.length(); i++) {
+            n = n * 62 + convert(s.charAt(i));
+        }
+        return n;
+        
+    }
+    public int convert(char c) {
+        if (c >= '0' && c <= '9')
+            return c - '0';
+        if (c >= 'a' && c <= 'z') {
+            return c - 'a' + 10;
+        }
+        if (c >= 'A' && c <= 'Z') {
+            return c - 'A' + 36;
+        }
+        return -1;
+    }
+    public String base10ToBase62(int n) {
+        StringBuilder sb = new StringBuilder();
+        while (n != 0) {
+            sb.insert(0, elements.charAt(n % 62));
+            n /= 62;
+        }
+        while (sb.length() != 6) {
+            sb.insert(0, '0');
+        }
+        return sb.toString();
+    }
+}
+
+2 Database Schema
+Browser-Web-Core-DB
+use cache to speed(+web server&database)
+improve (web server and users' browser
+
+3.issues of need one more MySQL machine.
+-running out of cache
+-more and more writing requests
+-more and more cache misses
+
+id modulo sharding
+
+write long_url -> hash(long_url)%62 -> put long_url to the specific machine according to hash value -> generate short_url on this machine -> return short_url
+
+short_url request -> get the sharding key (first byte of the short_url) -> search in the corresponding machine based on sharding key -> return long_url
+
+Each time we add a new machine, put half of the range of the most used machine to the new machine.
+
+more optimization:
+put different db in different areas.
