@@ -1,0 +1,237 @@
+//leetcode278
+    public static int firstBadVersion(int n) 
+    {
+        int start=1;
+        int end=n;
+        while(start<end)
+        {
+        	int mid=(start+end)/2;
+        	if(isBadVersion(mid))
+        		end=mid;
+        	else
+        		start=mid+1;
+        } 
+        return start;
+    }
+    
+    private static boolean isBadVersion(int version)
+    {
+    	return true;
+    }
+    
+    //leetcode311 matrix*matrix
+    public static int[][] multiply(int[][] A,int[][] B)
+    {
+    	int m=A.length;
+    	int p=B[0].length;
+    	int n=A[0].length;
+    	int[][] result=new int[m][p];
+    	for(int i=0;i<m;i++)
+    		for(int k=0;k<n;k++)
+    		{
+    			if(A[i][k]==0)
+    				continue;
+    			else
+    				for(int j=0;j<n;j++)
+    					result[i][j]+=(A[i][k]*B[k][j]);
+    		}
+    	return result;
+    }
+    
+    //leetcode314
+    public static List<ArrayList> veriticalOrder(TreeNode root)
+    {
+    	List<ArrayList> l=new ArrayList<ArrayList>();
+    	if(root==null)
+    		return l;
+    	Map<Integer,ArrayList<Integer>> map=new TreeMap<Integer,ArrayList<Integer>>();
+    	helper(root,0,map);
+    	for(Map.Entry<Integer,ArrayList<Integer>> entry:map.entrySet())
+    		l.add(entry.getValue());
+    	return l;
+    }
+    
+    private static void helper(TreeNode root,int key,Map<Integer,ArrayList<Integer>> map)
+    {
+    	if(root==null)
+    		return;
+    	if(!map.containsKey(key))
+    	{
+    		List<Integer> temp=new ArrayList<Integer>();
+    		temp.add(root.val);
+    		map.put(key, (ArrayList<Integer>) temp);
+    	}
+    	else
+    	{
+    		map.get(key).add(root.val);
+    	}
+    	helper(root.left,key-1,map);
+    	helper(root.right,key+1,map);
+    }
+    
+    //leetcode15
+    public static List<ArrayList> threeSum(int[] nums) 
+    {
+    	Arrays.sort(nums);
+        List<ArrayList> r=new ArrayList<ArrayList>();
+        for(int i=0;i<nums.length-2;i++)
+        {
+        	if(i==0||(i>0&&nums[i]!=nums[i-1]))
+        	{
+        		int low=i+1;
+        		int high=nums.length-1;
+        		int sum=0-nums[i];
+        		while(low<high)
+        		{
+        			if(nums[low]+nums[high]==sum)
+        			{
+        				r.add((ArrayList) Arrays.asList(nums[i],nums[high],nums[low]));
+        				while(low<high&&nums[low]==nums[low+1])
+        					low++;
+        				while(low<high&&nums[high]==nums[high-1])
+        					high--;
+        				low++;
+        				high--;
+        			}
+        			else if(nums[low]+nums[high]<sum)
+        				low++;
+        			else
+        				high--;
+        		}
+        	}
+        }
+        return r;
+    }
+    
+    //leetcode56
+    public List<Interval> merge(List<Interval> intervals) 
+    {
+        if(intervals.size()<2)
+        	return intervals;
+        List<Interval> r=new ArrayList<Interval>();
+        int[] start=new int[intervals.size()];
+        int[] end=new int[intervals.size()];
+        for(int i=0;i<intervals.size();i++)
+        {
+        	start[i]=intervals.get(i).start;
+        	end[i]=intervals.get(i).end;
+        }
+        Arrays.sort(start);
+        Arrays.sort(end);
+        for(int i=0,j=0;i<start.length;i++)
+        {
+        	if(i==(start.length-1)||start[i+1]>end[i])
+        	{
+        		r.add(new Interval(start[j],end[i]));
+        		j=i+1;
+        	}
+        }
+        
+        return r;
+    }
+    
+    //leetcode200
+    private int n;
+    private int m;
+
+    public int numIslands(char[][] grid) {
+        int count = 0;
+        n = grid.length;
+        if (n == 0) return 0;
+        m = grid[0].length;
+        for (int i = 0; i < n; i++){
+            for (int j = 0; j < m; j++)
+                if (grid[i][j] == '1') {
+                    DFSMarking(grid, i, j);
+                    ++count;
+                }
+        }    
+        return count;
+    }
+
+    private void DFSMarking(char[][] grid, int i, int j) {
+        if (i < 0 || j < 0 || i >= n || j >= m || grid[i][j] != '1') return;
+        grid[i][j] = '0';
+        DFSMarking(grid, i + 1, j);
+        DFSMarking(grid, i - 1, j);
+        DFSMarking(grid, i, j + 1);
+        DFSMarking(grid, i, j - 1);
+    }
+    
+    //leetcode689
+    public static int[] maxSumOfThreeSubarrays(int[] nums, int k) 
+    {
+        int n=nums.length,maxSum=0;
+        int[] sum=new int[n+1];
+        int[] posL=new int[n];
+        int[] posR=new int[n];
+        int[] ans=new int[3];
+        sum[0]=0;
+        for(int i=0;i<n;i++)
+        	sum[i+1]=sum[i]+nums[i];
+        for(int i=k,tot=sum[k]-sum[0];i<n;i++)
+        {
+        	if(sum[i+1]-sum[i+1-k]>tot)
+        	{
+        		posL[i]=i+1-k;
+        		tot=sum[i+1]-sum[i+1-k];
+        	}
+        	else
+        		posL[i]=posL[i-1];
+        }
+        
+        posR[n-k]=n-k;
+        for(int i=n-k-1,tot=sum[n]-sum[n-k];i>=0;i--)
+        {
+        	if(sum[i+k]-sum[i]>=tot)
+        	{
+        		posR[i]=i;
+        		tot=sum[i+k]-sum[i];
+        	}
+        	else
+        		posR[i]=posR[i+1];
+        }
+        
+        for(int i=k;i<=n-2*k;i++)
+        {
+        	int l=posL[i-1],r=posR[i+k];
+        	int tot=(sum[i+k]-sum[i])+(sum[l+k]-sum[l])+sum[r+k]-sum[r];
+        	if(tot>maxSum)
+        	{
+        		maxSum=tot;
+        		ans[0]=l;
+        		ans[1]=i;
+        		ans[2]=r;
+        	}
+        }
+        return ans;
+    }
+    
+    //leetcode257
+    public static List<String> binaryTreePaths(TreeNode root) 
+    {
+        List<String> l=new ArrayList<String>();
+        if(root==null)
+        	return l;
+        helper(root,"",l);
+        return l;
+    }
+    
+    private static void helper(TreeNode root,String s,List<String> l)
+    {
+    	if(root.left==null&&root.right==null)
+    	{
+    		s=s+"->"+String.valueOf(root.val);
+    		l.add(s.substring(2));
+    	}
+    	if(root.left!=null)
+    	{
+    		s=s+"->"+String.valueOf(root.val);
+    		helper(root.left,s,l);
+    	}
+    	if(root.right!=null)
+    	{
+    		s=s+"->"+String.valueOf(root.val);
+    		helper(root.right,s,l);
+    	}
+    }
