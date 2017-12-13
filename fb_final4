@@ -1,0 +1,501 @@
+package hw3;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.PriorityQueue;
+import java.util.Queue;
+import java.util.Random;
+import java.util.Set;
+import java.util.Stack;
+import java.util.TreeMap;
+
+import javax.swing.*;
+public class hw3
+{
+	public static void main(String[] args)
+	{
+		System.out.print(minWindow("ADOBECODEBANC","ABC"));
+	}
+	
+	//leetcode285
+	public TreeNode inorder(TreeNode root,TreeNode p)
+	{
+		if(root==null||p==null)
+			return null;
+		TreeNode successor=null;
+		while(root!=null)
+		{
+			if(p.val<root.val)
+			{
+				successor=root;
+				root=root.left;
+			}
+			else
+				root=root.right;
+		}
+		
+		return successor;
+	}
+	
+	//leetcode139
+   public static boolean wordBreak(String s, List<String> wordDict) 
+   {
+	   boolean[] f = new boolean[s.length() + 1];
+       
+       f[0] = true;
+       
+       //Second DP
+       for(int i=1; i <= s.length(); i++){
+           for(int j=0; j < i; j++){
+               if(f[j] && wordDict.contains(s.substring(j, i))){
+                   f[i] = true;
+                   break;
+               }
+           }
+       }
+       
+       return f[s.length()];
+    }
+   
+   //leetcode78
+  /* public List<List<Integer>> subsets(int[] nums) {
+       Arrays.sort(nums);
+        List<ArrayList> result=new ArrayList<ArrayList>();
+        int[] n=new int[nums.length];
+        subsets(0,nums,n,result);
+        return result;
+    }*/
+    
+    private static void subsets(int current,int[] nums,int[] result,List<List<Integer>> result2)
+    {
+    	if(current==nums.length)
+    	{
+    		List<Integer> l=new ArrayList<Integer>();
+    		for(int i=0;i<result.length;i++)
+    		{
+    			if(result[i]==1)
+    				l.add(nums[i]);
+    		}
+    		result2.add((ArrayList) l);
+    		return;
+    	}
+    	for(int i=0;i<2;i++)
+    	{
+    		result[current]=i;
+    		subsets(current+1,nums,result,result2);
+    	}
+    }
+    
+    //leetcode98
+    public boolean isValidBST(TreeNode root) 
+    {
+        return isBSTL(root,Long.MIN_VALUE,Long.MAX_VALUE);
+    }
+    
+    private boolean isBSTL(TreeNode root,long min,long max)
+    {
+    	if(root==null)
+    		return true;
+    	if(root.val>=max||root.val<=min)
+    		return false;
+    	return isBSTL(root.left,min,root.val)&&isBSTL(root.right,root.val,max);
+    }
+    
+    //leetcode125
+    public boolean isPalindrome(String s) 
+    {
+        s=s.toLowerCase();
+        int start=0;
+        int end=s.length()-1;
+        while(start<=end)
+        {
+        	if(!Character.isLetterOrDigit(s.charAt(start)))
+        		start++;
+        	else if(!Character.isLetterOrDigit(s.charAt(end)))
+        		end--;
+        	else
+        	{
+        		if(s.charAt(start)!=s.charAt(end))
+        			return false;
+        		start++;
+        		end--;
+        	}
+        }
+        return true;
+    }
+    
+    //leetcode88
+    public static void merge(int[] nums1, int m, int[] nums2, int n) 
+    {
+        int k=m+n-1;
+        m=m-1;
+        n=n-1;
+        while(m>=0&&n>=0)
+        {
+        	if(nums1[m]>nums2[n])
+        	{
+        		nums1[k]=nums1[m];
+        		k--;
+        		m--;
+        	}
+        	else
+        	{
+        		nums1[k]=nums2[n];
+        		k--;
+        		n--;
+        	}
+        }
+        
+        while(n>-1)
+        	nums1[k--]=nums2[n--];
+    }
+
+	/*
+	 * leetcode602 SQL
+	 * select ids as id, cnt as num
+from
+(
+select ids, count(*) as cnt
+   from
+   (
+        select requester_id as ids from request_accepted
+        union all
+        select accepter_id from request_accepted
+    ) as tbl1
+   group by ids
+   ) as tbl2
+order by cnt desc
+limit 1
+;
+	 */
+}
+
+//leetcode534
+class URLService {
+    HashMap<String, Integer> ltos;
+    HashMap<Integer, String> stol;
+    static int COUNTER;
+    String elements;
+    URLService() {
+        ltos = new HashMap<String, Integer>();
+        stol = new HashMap<Integer, String>();
+        COUNTER = 1;
+        elements = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    }
+    public String longToShort(String url) {
+        String shorturl = base10ToBase62(COUNTER);
+        ltos.put(url, COUNTER);
+        stol.put(COUNTER, url);
+        COUNTER++;
+        return "http://tiny.url/" + shorturl;
+    }
+    public String shortToLong(String url) {
+        url = url.substring("http://tiny.url/".length());
+        int n = base62ToBase10(url);
+        return stol.get(n);
+    }
+    
+    public int base62ToBase10(String s) {
+        int n = 0;
+        for (int i = 0; i < s.length(); i++) {
+            n = n * 62 + convert(s.charAt(i));
+        }
+        return n;
+        
+    }
+    public int convert(char c) {
+        if (c >= '0' && c <= '9')
+            return c - '0';
+        if (c >= 'a' && c <= 'z') {
+            return c - 'a' + 10;
+        }
+        if (c >= 'A' && c <= 'Z') {
+            return c - 'A' + 36;
+        }
+        return -1;
+    }
+    public String base10ToBase62(int n) {
+        StringBuilder sb = new StringBuilder();
+        while (n != 0) {
+            sb.insert(0, elements.charAt(n % 62));
+            n /= 62;
+        }
+        while (sb.length() != 6) {
+            sb.insert(0, '0');
+        }
+        return sb.toString();
+    }
+    
+    //leetcode23
+    public static ListNode mergeKLists(ListNode[] lists){
+        return partion(lists,0,lists.length-1);
+    }
+
+    public static ListNode partion(ListNode[] lists,int s,int e){
+        if(s==e)  return lists[s];
+        if(s<e){
+            int q=(s+e)/2;
+            ListNode l1=partion(lists,s,q);
+            ListNode l2=partion(lists,q+1,e);
+            return merge(l1,l2);
+        }else
+            return null;
+    }
+
+    //This function is from Merge Two Sorted Lists.
+    public static ListNode merge(ListNode l1,ListNode l2){
+        if(l1==null) return l2;
+        if(l2==null) return l1;
+        if(l1.val<l2.val){
+            l1.next=merge(l1.next,l2);
+            return l1;
+        }else{
+            l2.next=merge(l1,l2.next);
+            return l2;
+        }
+    }
+    
+    //leetcode57
+    public List<Interval> insert(List<Interval> intervals, Interval newInterval) 
+    {
+    	/*int[] start=new int[intervals.size()+1];
+        int[] end=new int[intervals.size()+1];
+        for(int i=0;i<intervals.size();i++)
+        {
+        	start[i]=intervals.get(i).start;
+        	end[i]=intervals.get(i).end;
+        }
+        start[start.length-1]=newInterval.start;
+        end[end.length-1]=newInterval.end;
+        Arrays.sort(start);
+        Arrays.sort(end);
+        List<Interval> result=new ArrayList<Interval>();
+         for(int i=0,j=0;i<start.length;i++)
+        {
+        	if(i==(start.length-1)||start[i+1]>end[i])
+        	{
+        		result.add(new Interval(start[j],end[i]));
+        		j=i+1;
+        	}
+        }
+        return result; solution1*/
+    	List<Interval> result = new ArrayList<Interval>();
+        for (Interval i : intervals) {
+            if (newInterval == null || i.end < newInterval.start)
+                result.add(i);
+            else if (i.start > newInterval.end) {
+                result.add(newInterval);
+                result.add(i);
+                newInterval = null;
+            } else {
+                newInterval.start = Math.min(newInterval.start, i.start);
+                newInterval.end = Math.max(newInterval.end, i.end);
+            }
+        }
+        if (newInterval != null)
+            result.add(newInterval);
+        return result;   
+    }
+    
+    //leetcode597
+    /*round(
+    	    ifnull(
+    	    (select count(*) from (select distinct requester_id, accepter_id from request_accepted) as A)
+    	    /
+    	    (select count(*) from (select distinct sender_id, send_to_id from friend_request) as B),
+    	    0)
+    	, 2) as accept_rate;*/
+    
+    //leetcode252
+    public static boolean ifAttend(Interval[] intervals)
+    {
+    	Arrays.sort(intervals, new Comparator<Interval>() {  
+            @Override  
+            public int compare(Interval o1, Interval o2) {  
+                int r = o1.start - o2.start;  
+                return r==0? o1.end - o2.end : r;  
+            }  
+        });  
+        for(int i=1;i<intervals.length;i++) {  
+            Interval t1 = intervals[i-1];  
+            Interval t2 = intervals[i];  
+            if(t1.end>t2.start) return false;  
+        }  
+        return true; 
+    }
+}
+
+class ListNode
+{
+	int val;
+	ListNode next;
+	ListNode(int x)
+	{
+		val=x;
+	}
+}
+
+class Interval {
+	     int start;
+	     int end;
+	     Interval() { start = 0; end = 0; }
+	     Interval(int s, int e) { start = s; end = e; }
+	     }
+//leetcode146
+class LRUCache {
+	HashMap<Integer,Node> map;
+	int capacity,count;
+	Node head,tail;
+
+    public LRUCache(int capacity) {
+        this.capacity=capacity;
+        map=new HashMap<Integer,Node>();
+        head=new Node(0,0);
+        tail=new Node(0,0);
+        head.next=tail;
+        head.pre=null;
+        tail.pre=head;
+        tail.next=null;
+        count=0;
+    }
+    
+    public void delete(Node node)
+    {
+    	node.pre.next=node.next;
+    	node.next.pre=node.pre;
+    }
+    
+    public void addToHead(Node node)
+    {
+    	node.next=head.next;
+    	node.pre=head;
+    	node.next.pre=node;
+    	head.next=node;
+    }
+    
+    public int get(int key) 
+    {
+        if(map.get(key)!=null)
+        {
+        	Node node=map.get(key);
+        	int result=node.value;
+        	delete(node);
+        	addToHead(node);
+        	return result;
+        }
+        return -1;
+    }
+    
+    public void put(int key, int value) 
+    {
+        if(map.get(key)!=null)
+        {
+        	Node node=map.get(key);
+        	node.value=value;
+        	delete(node);
+        	addToHead(node);
+        }
+        else
+        {
+        	Node node=new Node(key,value);
+        	map.put(key, node);
+        	if(count<capacity)
+        	{
+        		count++;
+        		addToHead(node);
+        	}
+        	else
+        	{
+        		map.remove(tail.pre.key);
+        		delete(tail.pre);
+        		addToHead(node);
+        	}
+        }
+    }
+}
+
+class Node
+{
+	Node pre;
+	Node next;
+	int key;
+	int value;
+	Node(int key,int value)
+	{
+		this.key=key;
+		this.value=value;
+	}
+}
+
+//leetcode642
+class AutocompleteSystem
+{
+	class TrieNode {
+        public Map<Character, TrieNode> children;
+        public Map<String, Integer> counts;
+        public TrieNode() {
+            children = new HashMap<Character, TrieNode>();
+            counts = new HashMap<String, Integer>();
+        }
+    }
+    
+    private TrieNode _root;
+    private StringBuilder _prefix;
+
+    public AutocompleteSystem(String[] sentences, int[] times) {
+        _root = new TrieNode();
+        _prefix = new StringBuilder();
+        for (int i = 0; i < sentences.length; i++) {
+            addSentence(sentences[i], times[i]);
+        }
+    }
+    
+    private void addSentence(String sentence, int times) {
+        TrieNode current = _root;
+        for (char c : sentence.toCharArray()) {
+            if (!current.children.containsKey(c)) {
+                current.children.put(c, new TrieNode());
+            }
+            current = current.children.get(c);
+            current.counts.put(sentence, current.counts.getOrDefault(sentence, 0) + times);
+        }
+    } 
+    
+    public List<String> input(char c) {
+        if (c == '#') {
+            addSentence(_prefix.toString(), 1);
+            _prefix.setLength(0);
+            return Collections.emptyList();
+        }
+        _prefix.append(c);
+        TrieNode current = _root;
+        for (char runner : _prefix.toString().toCharArray()) {
+            if (!current.children.containsKey(runner)) {
+                return Collections.emptyList();
+            }
+            current = current.children.get(runner);
+        }
+        
+        PriorityQueue<Map.Entry<String, Integer>> queue = new PriorityQueue<>((a, b) -> a.getValue().compareTo(b.getValue()) == 0 ? a.getKey().compareTo(b.getKey()) : b.getValue() - a.getValue());
+        queue.addAll(current.counts.entrySet());
+        
+        List<String> result = new ArrayList<String>();
+        for (int i = 0; i < 3; i++) {
+            Map.Entry<String, Integer> entry = queue.poll();
+            if (entry != null) {
+                result.add(entry.getKey());
+            }
+        }
+        return result;
+    }
+	}
+}
