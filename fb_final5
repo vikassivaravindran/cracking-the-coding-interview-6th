@@ -1,0 +1,437 @@
+package hw3;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.PriorityQueue;
+import java.util.Queue;
+import java.util.Random;
+import java.util.Set;
+import java.util.Stack;
+import java.util.TreeMap;
+
+import javax.swing.*;
+public class hw3
+{
+	public static void main(String[] args)
+	{
+		ListNode p=new ListNode(1);
+		p.next=new ListNode(2);
+		p.next.next=new ListNode(3);
+		p.next.next.next=new ListNode(4);
+		p=reverseList(p);
+		while(p!=null)
+		{
+			System.out.print(p.val+" ");
+			p=p.next;
+		}
+	}
+	
+	//leetcode206
+    public static ListNode reverseList(ListNode head) {
+        if(head==null||head.next==null)
+        	return head;
+       ListNode pre=head;
+       ListNode cur=pre.next;
+       pre.next=null;
+       while(cur!=null)
+       {
+    	   ListNode next=cur.next;
+    	   cur.next=pre;
+    	   pre=cur;
+    	   cur=next;
+       }
+       return pre;
+    }
+    
+    //leetcode43
+    public static String multiply(String num1, String num2) 
+    {
+        if(num1.equals("0")||num2.equals("0"))
+        	return "0";
+        if(num1.equals("1"))
+        	return num2;
+        if(num2.equals("1"))
+        	return num1;
+        int m=num1.length();
+        int n=num2.length();
+        int[] pos=new int[m+n];
+        for(int i=m-1;i>=0;i--)
+        	for(int j=n-1;j>=0;j--)
+        	{
+        		int mul=(num1.charAt(i)-'0')*(num2.charAt(j)-'0');
+        		int p1=i+j;
+        		int p2=i+j+1;
+        		int sum=mul+pos[p2];
+        		pos[p1]+=sum/10;
+        		pos[p2]=(sum)%10;
+        	}
+        
+        StringBuilder sb=new StringBuilder();
+        for(int p:pos)
+        	if(!(sb.length()==0&&p==0))
+        		sb.append(p);
+        return sb.length()==0?"0":sb.toString();
+    }
+    
+    //leetcode670
+    public static int maximumSwap(int num) {
+        char[] digits = Integer.toString(num).toCharArray();
+        
+        int[] buckets = new int[10];
+        for (int i = 0; i < digits.length; i++) 
+        {
+            buckets[digits[i] - '0'] = i;
+        }
+        
+        for (int i = 0; i < digits.length; i++) {
+            for (int k = 9; k > digits[i] - '0'; k--) {
+                if (buckets[k] > i) {
+                    char tmp = digits[i];
+                    digits[i] = digits[buckets[k]];
+                    digits[buckets[k]] = tmp;
+                    return Integer.valueOf(new String(digits));
+                }
+            }
+        }
+        
+        return num;
+    }
+    
+    //leetcode133
+    private HashMap<Integer, UndirectedGraphNode> map = new HashMap<>();
+    public UndirectedGraphNode cloneGraph(UndirectedGraphNode node) {
+        return clone(node);
+    }
+
+    private UndirectedGraphNode clone(UndirectedGraphNode node) {
+        if (node == null) return null;
+        
+        if (map.containsKey(node.label)) {
+            return map.get(node.label);
+        }
+        UndirectedGraphNode clone = new UndirectedGraphNode(node.label);
+        map.put(clone.label, clone);
+        for (UndirectedGraphNode neighbor : node.neighbors) {
+            clone.neighbors.add(clone(neighbor));
+        }
+        return clone;
+    }
+    
+    //leetcode218
+  /*  public static List<int[]> getSkyline(int[][] buildings) 
+    {
+         List<int[]> result = new ArrayList<>();
+         List<int[]> height = new ArrayList<>();
+         for(int[] b:buildings) 
+         {
+         height.add(new int[]{b[0], -b[2]});//left start,height
+         height.add(new int[]{b[1], b[2]});
+         }
+         Collections.sort(height, (a, b) -> {
+             if(a[0] != b[0]) 
+                 return a[0] - b[0];
+             return a[1] - b[1];
+          });
+      Queue<Integer> pq = new PriorityQueue<>((a, b) -> (b - a));
+      pq.offer(0);
+      int prev = 0;
+      for(int[] h:height)
+      {
+         if(h[1] < 0) {
+             pq.offer(-h[1]);//select start
+         } else {
+             pq.remove(h[1]);
+         }
+         int cur = pq.peek();
+         if(prev != cur) {
+             result.add(new int[]{h[0], cur});
+             prev = cur;
+         }
+       }
+      return result;
+   }*/
+    
+    //leetcode128
+    public static int longestConsecutive(int[] nums) 
+    {
+          int res=0;
+          Map<Integer,Integer> map=new HashMap <Integer,Integer>();
+          for(int num:nums)
+          {
+            if(!map.containsKey(num))
+            {
+              int left=map.containsKey(num-1)?map.get(num-1):0;
+              int right=map.containsKey(num+1)?map.get(num+1):0;
+              int sum=left+right+1;
+              map.put(num, sum);
+              res=Math.max(res,sum);
+              map.put(num-left,sum);
+              map.put(num+right,sum);
+            }
+            else
+              continue;
+          }
+          return res;
+    }
+    
+    //leetcode75
+    public static void sortColors(int[] nums) 
+    {
+    	int start=0;
+        int end=nums.length-1;
+        for(int i=0;i<=end;i++)
+        {
+          if(nums[i]==0)
+          {
+            nums[i]=nums[start];
+            nums[start]=0;
+            start++;
+          }
+          if(nums[i]==2)
+          {
+            nums[i]=nums[end];
+            nums[end]=2;
+            end--;
+            i--;
+          }
+        }
+    }
+    
+    //leetcode215
+    public static int findKthLargest(int[] nums, int k) 
+    {
+          int n = nums.length;
+          int p = quickSelect(nums, 0, n - 1, n - k + 1);
+          return nums[p];
+    }
+    
+    private static int quickSelect(int[] a, int lo, int hi, int k) {
+      // use quick sort's idea
+      // put nums that are <= pivot to the left
+      // put nums that are  > pivot to the right
+      int i = lo, j = hi, pivot = a[hi];
+      while (i <j) 
+      {
+        if(a[i++] > pivot) 
+        {
+          swap(a, --i, --j);
+        }
+      }
+      swap(a,i,hi);
+      // count the nums that are <= pivot from lo
+      int m = i - lo + 1;
+      
+      // pivot is the one!
+      if (m == k)     
+        return i;
+      // pivot is too big, so it must be on the left
+      else if (m > k) 
+        return quickSelect(a, lo, i - 1, k);
+      // pivot is too small, so it must be on the right
+      else            
+        return quickSelect(a, i + 1, hi, k - m);
+    }
+    
+    private static void swap(int[] a, int i, int j) {
+        int tmp = a[i];
+        a[i] = a[j];
+        a[j] = tmp;
+      }
+    
+    //leetcode636
+    public int[] exclusiveTime(int n, List<String> logs) 
+    {
+        int[] res=new int[n];
+        Stack<Integer> stack=new Stack<Integer>();
+        int prevTime=0;
+        for(String log:logs)
+        {
+          String[] parts=log.split(":");
+          if(!stack.isEmpty())
+            res[stack.peek()]+=Integer.parseInt(parts[2])-prevTime;
+          prevTime=Integer.parseInt(parts[2]);
+          if(parts[1].equals("start"))
+            stack.push(Integer.parseInt(parts[0]));
+          else
+          {
+            prevTime++;
+            res[stack.pop()]++;
+          }
+        }
+        return res;
+    }
+    
+    //leetcode13
+    public static int romanToInt(String s) {
+        int sum=0;
+    if(s.indexOf("IV")!=-1){sum-=2;}
+    if(s.indexOf("IX")!=-1){sum-=2;}
+    if(s.indexOf("XL")!=-1){sum-=20;}
+    if(s.indexOf("XC")!=-1){sum-=20;}
+    if(s.indexOf("CD")!=-1){sum-=200;}
+    if(s.indexOf("CM")!=-1){sum-=200;}
+    
+    char c[]=s.toCharArray();
+    int count=0;
+    
+   for(;count<=s.length()-1;count++){
+       if(c[count]=='M') sum+=1000;
+       if(c[count]=='D') sum+=500;
+       if(c[count]=='C') sum+=100;
+       if(c[count]=='L') sum+=50;
+       if(c[count]=='X') sum+=10;
+       if(c[count]=='V') sum+=5;
+       if(c[count]=='I') sum+=1;
+       
+   }
+   
+   return sum;
+    }
+    
+    //leetcode38
+    public static String countAndSay(int n) 
+    {
+         if(n<1)
+           return null;
+         String res="1";
+         while(--n>0)
+         {
+           StringBuilder cur=new StringBuilder();
+           for(int i=0;i<res.length();i++)
+           {
+             int count=1;
+             while((i+1)<res.length()&&res.charAt(i)==res.charAt(i+1))
+             {
+               count++;
+               i++;
+             }
+            cur.append(count);
+            cur.append(res.charAt(i));
+           }
+           res=cur.toString();
+         }
+         return res;
+     }
+    
+    //leetcode680
+    public static boolean validPalindrome(String s) 
+    {
+         if(s==null||s.length()<2)
+           return true;
+         int i=0;
+         int j=s.length()-1;
+         while(i<j&&s.charAt(i)==s.charAt(j))
+         {
+           i++;
+           j--;
+         }
+         if(i>=j)
+           return true;
+         else
+         {
+           if(valid(s,i+1,j)||valid(s,i,j-1))
+             return true;
+           return false;
+         }
+     }
+             
+     private static boolean valid(String s,int i,int j)
+             {
+               while(i<j)
+               {
+                 if(s.charAt(i)==s.charAt(j))
+                 {
+                   i++;
+                   j--;
+                 }
+                 else
+                   return false;
+               }
+               return true;
+             }
+     //leetcode269
+     public static String alienOrder(String[] words) {  
+         if (words == null || words.length == 0) {  
+             return "";  
+         }  
+         StringBuilder sb = new StringBuilder();  
+         HashMap<Character, Set<Character>> suc = new HashMap<Character, Set<Character>>();  
+         HashMap<Character, Integer> pre = new HashMap<Character, Integer> ();  
+         HashSet<Character> charSet = new HashSet<Character>();  
+         String previousWord = new String("");  
+         for (String currentWord : words) {  
+             for (Character c : currentWord.toCharArray()) {  
+                 charSet.add(c);  
+             }  
+             for (int i = 0; i < Math.min(previousWord.length(), currentWord.length()); ++i) {  
+                 if (previousWord.charAt(i) != currentWord.charAt(i)) {  
+                     if (!pre.containsKey(currentWord.charAt(i))) { //----section_pre----  
+                         pre.put(currentWord.charAt(i), 1);  
+                     } 
+                   else {  
+                         //ERROR1: 过滤掉重复的关系 ["za","zb","ca","cb"], 从输入得出的中间结论，"a->b"会重复出现两次，需要滤重。为了实现滤重，重新调整了section_pre和section_suc部分的顺序。  
+                         if (suc.containsKey(previousWord.charAt(i)) &&   
+                         suc.get(previousWord.charAt(i)).contains(currentWord.charAt(i))) {  
+                             continue;  
+                         }  
+                         pre.put(currentWord.charAt(i), pre.get(currentWord.charAt(i)) + 1);  
+                     }  
+                     if (!suc.containsKey(previousWord.charAt(i))) { //----section_suc----  
+                         suc.put(previousWord.charAt(i), new HashSet<Character> ());  
+                     }  
+                     suc.get(previousWord.charAt(i)).add(currentWord.charAt(i));                      
+                     break; //the BEST part of this question  
+                 }  
+             }  
+             previousWord = currentWord;  
+         }  
+         Queue<Character> queue = new LinkedList<Character>(); //BFS 
+         for (Character each : charSet) {  
+             if (!pre.containsKey(each)) {  
+                 queue.add(each);  
+             }  
+         }  
+   
+   
+         while (!queue.isEmpty()) {  
+             Character currentChar = queue.poll();  
+             sb.append(currentChar);  
+             //ERROR2 should check containsKey  
+             if (!suc.containsKey(currentChar)) {  
+                 continue;  
+             }  
+             for (Character each : suc.get(currentChar)) {  
+                 pre.put(each, pre.get(each) - 1);  
+                 if (pre.get(each) == 0) {  
+                     queue.offer(each);  
+                 }  
+             }  
+         }  
+         return sb.length() == charSet.size() ? sb.toString() : "";  
+     }  
+}
+
+class ListNode {
+	    int val;
+        ListNode next;
+	    ListNode(int x) { val = x; }
+}
+
+class UndirectedGraphNode {
+	    int label;
+	    List<UndirectedGraphNode> neighbors;
+	    UndirectedGraphNode(int x) 
+	    { 
+	    	label = x; 
+	    	neighbors = new ArrayList<UndirectedGraphNode>(); 
+	    }
+}
