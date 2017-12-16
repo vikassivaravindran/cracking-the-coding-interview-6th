@@ -1,0 +1,276 @@
+//leetcode68
+	 public static List<String> fullJustify(String[] words, int maxWidth) 
+	  {
+	        int L=maxWidth;
+	      List<String> lines = new ArrayList<String>();
+	        
+	        int index = 0;
+	        while (index < words.length) {
+	            int count = words[index].length();
+	            int last = index + 1;
+	            while (last < words.length) {
+	                if (words[last].length() + count + 1 > L) break;
+	                count += words[last].length() + 1;
+	                last++;
+	            }
+	            
+	            StringBuilder builder = new StringBuilder();
+	            int diff = last - index - 1;
+	            // if last line or number of words in the line is 1, left-justified
+	            if (last == words.length || diff == 0) {
+	                for (int i = index; i < last; i++) {
+	                    builder.append(words[i] + " ");
+	                }
+	                builder.deleteCharAt(builder.length() - 1);
+	                for (int i = builder.length(); i < L; i++) {
+	                    builder.append(" ");
+	                }
+	            } else {
+	                // middle justified
+	                int spaces = (L - count) / diff;
+	                int r = (L - count) % diff;
+	                for (int i = index; i < last; i++) {
+	                    builder.append(words[i]);
+	                    if (i < last - 1) {
+	                        for (int j = 0; j <= (spaces + ((i - index) < r ? 1 : 0)); j++) {
+	                            builder.append(" ");
+	                        }
+	                    }
+	                }
+	            }
+	            lines.add(builder.toString());
+	            index = last;
+	        }
+	        
+	        
+	        return lines;
+	  }
+	 
+	 //leetcode85
+	 public static int maximalRectangle(char[][] matrix) 
+	  {
+	      if(matrix.length==0)
+	        return 0;
+	      final  int m=matrix.length;
+	      final int n=matrix[0].length;
+	      int[] left=new int[n];
+	      int[] right=new int[n];
+	      int[] height=new int[n];
+	      for(int i=0;i<n;i++)
+	      {
+	        left[i]=0;
+	        right[i]=n;
+	        height[i]=0;
+	      }
+	      int res=0;
+	      for(int i=0;i<m;i++)
+	      {
+	        int cur_left=0;
+	        int cur_right=n;
+	        for(int j=0;j<n;j++)
+	        {
+	          if(matrix[i][j]=='1')
+	            height[j]++;
+	          else
+	            height[j]=0;
+	        }
+	        
+	        for(int j=0;j<n;j++)
+	        {
+	          if(matrix[i][j]=='1')
+	            left[j]=Math.max(left[j],cur_left);
+	          else
+	          {
+	            left[j]=0;
+	            cur_left=j+1;
+	          }
+	        }
+	        
+	        for(int j=n-1;j>=0;j--)
+	        {
+	          if(matrix[i][j]=='1')
+	            right[j]=Math.min(right[j],cur_right);
+	          else
+	          {
+	            cur_right=j;
+	            right[j]=n;
+	          }
+	        }
+	        
+	        for(int j=0;j<n;j++)
+	          res=Math.max(res,(right[j]-left[j])*height[j]);
+	      }
+	          return res;
+	  }
+	 
+	 //leetcode639
+	 public static int numDecodings(String s) 
+	 {
+	     long[] dp=new long[s.length()+1];
+	     dp[0]=1;
+	     if(s.charAt(0)=='0')
+	       return 0;
+	     dp[1]=(s.charAt(0)=='*')?9:1;
+	     for(int i=2;i<=s.length();i++)
+	     {
+	       char first=s.charAt(i-2);
+	       char second=s.charAt(i-1);
+	       if(second=='*')
+	         dp[i]+=9*dp[i-1];
+	       else if(second>'0')
+	         dp[i]+=dp[i-1];
+	       
+	       if(first=='*')
+	       {
+	         if(second=='*')
+	           dp[i]+=15*dp[i-2];
+	         else if(second<='6')
+	           dp[i]+=2*dp[i-2];
+	         else
+	           dp[i]+=dp[i-2];
+	       }
+	       else if(first=='1'||first=='2')
+	       {
+	         if(second=='*')
+	         {
+	           if(first=='1')
+	              dp[i]+=9*dp[i-2];
+	           else
+	             dp[i]+=6*dp[i-2];
+	         }
+	         else if((first-'0')*10+(second-'0')<=26)
+	           dp[i]+=dp[i-2];
+	       }
+	       dp[i]%=1000000007;
+	     }
+	      return (int)dp[s.length()];
+	  }
+	 //leetcode65
+	 public static boolean isNumber(String s) 
+	  {
+	        //return s.matches("^ *[+-]?(([0-9]+\\.?)|([0-9]*\\.[0-9]+))(e[+-]?[0-9]+)? *$");
+		  s=s.trim();
+	       boolean pointSeen=false;
+	       boolean eSeen=false;
+	       boolean numberSeen=false;
+	       boolean numberAfterE=true;
+	       for(int i=0;i<s.length();i++)
+	       {
+	         Character temp=s.charAt(i);
+	         if('0' <= s.charAt(i) && s.charAt(i) <= '9')
+	         {
+	           numberSeen=true;
+	           numberAfterE=true;
+	         }
+	         else if(temp.equals('.'))
+	         {
+	           if(eSeen||pointSeen)
+	             return false;
+	           pointSeen=true;
+	         }
+	         else if(temp.equals('e')||temp.equals('E'))
+	         {
+	           if(eSeen||!numberSeen)
+	             return false;
+	           numberAfterE=false;
+	           eSeen=true;
+	         }
+	         else if(temp.equals('+')||temp.equals('-'))
+	         {
+	           if(i!=0&&s.charAt(i-1)!='e')
+	             return false;
+	         }
+	         else
+	           return false;
+	       }
+	       return numberSeen&&numberAfterE;
+	    }
+	 
+	 //leetcode69
+	 public int mySqrt(int x) {
+		 
+	      if (x == 0)
+	        return 0;
+	    int left = 1, right = Integer.MAX_VALUE;
+	    while (true) {
+	        int mid = left + (right - left)/2;
+	        if (mid > x/mid) {
+	            right = mid - 1;
+	        } else {
+	            if (mid + 1 > x/(mid + 1))
+	                return mid;
+	            left = mid + 1;
+	        } 
+	        
+	    } 
+	    }
+	 
+	 //leetcode26
+	 public static int removeDuplicates(int[] nums) 
+	  {
+	     int i = 0;
+	    for (int n : nums)
+	        if (i == 0 || n > nums[i-1])
+	            nums[i++] = n;
+	    return i;
+	  }
+	 
+	 //404
+	 public static int sumOfLeftLeaves(TreeNode root) 
+	  {
+	       if(root==null)
+	         return 0;
+	       return sum(root.left,true)+sum(root.right,false);
+	  }
+	  
+	  private static int sum(TreeNode root, boolean isLeft)
+	  {
+	       if(root==null)
+	           return 0;
+	       if(isLeft&&root.left==null&&root.right==null)
+	         return root.val;
+	       return sum(root.left,true)+sum(root.right,false);
+	  }
+	  
+	  //leetcode398
+	  class Solution {
+		    Map<Integer,ArrayList<Integer>> map;
+		    public Solution(int[] nums) 
+		  {
+		        map=new HashMap<Integer,ArrayList<Integer>>();
+		        for(int i=0;i<nums.length;i++)
+		        {
+		          if(map.containsKey(nums[i]))
+		          {
+		             ArrayList<Integer> temp=map.get(nums[i]);
+		             temp.add(i);
+		             map.put(nums[i],temp);  
+		          }
+		          else
+		             {
+		               ArrayList<Integer> temp=new ArrayList<Integer>();
+		               temp.add(i);
+		               map.put(nums[i],temp);
+		             }
+		        }
+		    }
+		    
+		    public int pick(int target) 
+		    {
+		        ArrayList<Integer> temp=map.get(target);
+		        int length=temp.size();
+		        return temp.get((int)(Math.random()*length));
+		    }
+		}
+}
+
+class TreeNode 
+	 {
+	     int val;
+	     TreeNode left;
+	     TreeNode right;
+	     TreeNode(int x) 
+	     { 
+	       val = x; 
+	     }
+	 }
