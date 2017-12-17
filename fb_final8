@@ -1,0 +1,502 @@
+//leetcode49
+	 public List<ArrayList<String>> groupAnagrams(String[] strs) {
+	       String[] strs2=strs;
+	        List<ArrayList<String>> res=new ArrayList<ArrayList<String>>();
+	        if(strs.length<1)
+	          return res;
+	        Map<String,ArrayList<String>> map=new HashMap<String,ArrayList<String>>();
+	        for(int i=0;i<strs2.length;i++)
+	        {
+	          char[] temp=strs2[i].toLowerCase().toCharArray();
+	          Arrays.sort(temp);
+	          String mid=String.valueOf(temp);
+	          if(map.containsKey(mid))
+	          {
+	            ArrayList<String> temp2=map.get(mid);
+	            temp2.add(strs[i]);
+	            map.put(mid,temp2);
+	          }
+	          else
+	          {
+	            ArrayList<String> temp2=new ArrayList<String>();
+	            temp2.add(strs[i]);
+	            map.put(mid,temp2);
+	          }
+	        }
+	        for(Map.Entry<String,ArrayList<String>> entry:map.entrySet())
+	        {
+	          res.add(entry.getValue());
+	        }
+	        return res;
+	    }
+	 
+	 //leetcode209
+	 public static int minSubArrayLen(int s, int[] nums) 
+	   {
+	        if(nums.length==0)
+	          return 0;
+	        int i=0;
+	        int j=0;
+	        int sum=0;
+	        int length=Integer.MAX_VALUE;
+	        while(j<nums.length)
+	        {
+	          sum+=nums[j++];
+	          while(sum>=s)
+	          {
+	            length=Math.min(length,j-i);
+	            sum-=nums[i++];
+	          }
+	        }
+	        return length==Integer.MAX_VALUE?0:length;
+	  }
+	 
+	 //leetcode102
+	 public static List<List<Integer>> levelOrder(TreeNode root) 
+	  {
+	      List<List<Integer>> res=new ArrayList<List<Integer>>();
+	      if(root==null)
+	         return res;
+	      Queue<TreeNode> queue=new LinkedList<TreeNode>();
+	      queue.add(root);
+	      while(!queue.isEmpty())
+	      {
+	        int levelNum=queue.size();
+	        ArrayList<Integer> temp=new ArrayList<Integer>();
+	        for(int i=0;i<levelNum;i++)
+	        {
+	          if(queue.peek().left!=null)
+	            queue.add(queue.peek().left);
+	          if(queue.peek().right!=null)
+	            queue.add(queue.peek().right);
+	          temp.add(queue.remove().val);
+	        }
+	        res.add(temp);
+	      }
+	    return res;
+	  } 
+	 
+	 //leetcode554
+	 public static int leastBricks(List<List<Integer>> wall) 
+	   {
+	        if(wall==null||wall.size()==0)
+	          return 0;
+	        Map<Integer,Integer> map=new HashMap<Integer,Integer>();
+	        for(List<Integer> row:wall)
+	        {
+	          int sum=0;
+	          for(int i=0;i<row.size()-1;i++)
+	          {
+	            sum+=row.get(i);
+	            if(map.containsKey(sum))
+	              map.put(sum,map.get(sum)+1);
+	            else
+	              map.put(sum,1);
+	          }
+	        }
+	        int res=wall.size();
+	        for(int key:map.keySet())
+	        {
+	          res=Math.min(res,wall.size()-map.get(key));
+	        }
+	        return res;
+	    }
+	 
+	 //leetcode90
+	 public static List<List<Integer>> subsetsWithDup(int[] nums) 
+	   {
+	        Arrays.sort(nums);
+	        List<List<Integer>> res=new ArrayList<List<Integer>>();
+	        List<Integer> each=new ArrayList<Integer>();
+	        helper(res,each,0,nums);
+	        return res;
+	    }
+	  
+	   private static void helper(List<List<Integer>> res,List<Integer> each,int pos,int[] nums)
+	   {
+	        if(pos<=nums.length)
+	          res.add(each);
+	        int i=pos;
+	        while(i<nums.length)
+	        {
+	          each.add(nums[i]);
+	          helper(res,new ArrayList<Integer> (each),i+1,nums);
+	          each.remove(each.size()-1);
+	          i++;
+	          while(i<nums.length&&nums[i]==nums[i-1])
+	            i++;
+	        }
+	       return;
+	   }
+	   
+	   //leetcode286
+	   public static void wallsAndGates(int[][] rooms)
+	   {
+	     if(rooms==null||rooms.length==0||rooms[0]==null||rooms[0].length==0)
+	       return;
+	     int m=rooms.length;
+	     int n=rooms[0].length;
+	     boolean[][] visited=new boolean[m][n];
+	     for(int i=0;i<m;i++)
+	       for(int j=0;j<n;j++)
+	       {
+	         if(rooms[i][j]==Integer.MAX_VALUE)
+	           rooms[i][j]=search(rooms,visited,i,j,m,n);
+	       }
+	   }
+	  
+	  private static int search(int[][] rooms,boolean[][] visited,int i,int j,int m,int n)
+	  {
+	    if(i<0||i>=m||j<0||j>=n||rooms[i][j]==-1)
+	      return Integer.MAX_VALUE;
+	    if(rooms[i][j]==0)
+	      return 0;
+	    if(visited[i][j])
+	      return rooms[i][j];
+	    visited[i][j]=true;
+	    if(rooms[i][j]>0&&rooms[i][j]<Integer.MAX_VALUE)
+	      return rooms[i][j];
+	     int up = search(rooms, visited, i-1, j, m, n);  
+	     int down = search(rooms, visited, i+1, j, m, n);  
+	     int left = search(rooms, visited, i, j-1, m, n);  
+	     int right = search(rooms, visited, i, j+1, m, n); 
+	     visited[i][j]=false;
+	     int min=Math.min(Math.min(up,down),Math.min(left,right));
+	     return min==Integer.MAX_VALUE?min:min+1;
+	  }
+	  
+	  //leetcode70
+	  public static String simplifyPath(String path) 
+	   {
+	     Deque<String> s=new LinkedList();
+	     Set<String> skip=new HashSet<String>(Arrays.asList("..",",",""));
+	     for(String dir:path.split("/"))
+	     {
+	       if(dir.equals("..")&&!s.isEmpty())
+	         s.pop();
+	       else if(!skip.contains(dir))
+	         s.push(dir);
+	     }
+	     String res="";
+	     for(String dir:s)
+	       res="/"+dir+res;
+	     return res.isEmpty()?"/":res;
+	  }
+	  
+	  //leetcode377
+	  public static int combinationSum4(int[] nums, int target) 
+	   {
+	       Arrays.sort(nums);
+	       int[] res=new int[target+1];
+	       for(int i=1;i<res.length;i++)
+	       {
+	         for(int num:nums)
+	         {
+	           if(num>i)
+	             break;
+	           else if(num==i)
+	             res[i]+=1;
+	           else
+	             res[i]+=res[num-i];
+	         }
+	       }
+	       return res[target];
+	    }
+	  
+	  //leetcode127 BFS
+	  public int ladderLength(String beginWord, String endWord, List<String> wordList) 
+	   {
+	        if(!wordList.contains(endWord))
+	          return 0;
+	        Set<String> beginSet=new HashSet<String>();
+	        Set<String> endSet=new HashSet<String>();
+	        Set<String> visited=new HashSet<String>();
+	        int len=1;
+	        beginSet.add(beginWord);
+	        endSet.add(endWord);
+	        while(!beginSet.isEmpty()&&!endSet.isEmpty())
+	        {
+	          if(beginSet.size()>endSet.size())
+	          {
+	            Set<String> temp=beginSet;
+	            beginSet=endSet;
+	            endSet=temp;
+	          }
+	          
+	          Set<String> temp=new HashSet<String>();
+	          for(String s:beginSet)
+	          {
+	            for(int i=0;i<s.length();i++)
+	            {
+	              StringBuilder sb=new StringBuilder();
+	              for(char j='a';j<='z';j++)
+	              {
+	                sb.setCharAt(i,j);
+	                if(endSet.contains(sb.toString()))
+	                   return len+1;
+	                if(!visited.contains(sb.toString())&&wordList.contains(sb.toString()))
+	                   {
+	                     visited.add(sb.toString());
+	                     temp.add(sb.toString());
+	                   }
+	              }
+	            }
+	          }
+	                   len++;
+	                   beginSet=temp;
+	        }
+	                   return 0;
+	    }
+	  
+	  //leetcode334
+	  public static boolean increasingTriplet(int[] nums) 
+	   {
+	      int min=Integer.MAX_VALUE;
+	      int secondMin=Integer.MAX_VALUE;
+	      for(int num:nums)
+	      {
+	        if(num<=min)
+	           min=num;
+	        else if(num<secondMin)
+	           secondMin=num;
+	        else if(num>secondMin)
+	           return true;
+	      }
+	      return false;
+	   }
+	  
+	  //leetcode168
+	  public static String convertToTitle(int n) 
+	  {
+		  if(n==0)
+		       return "Z";
+		     if(n<=26)
+		       return String.valueOf((char)('A'+n-1));
+		     else if(n%26==0)
+		       return convertToTitle(n/26-1)+convertToTitle(n%26);
+		      else
+		        return convertToTitle(n/26)+convertToTitle(n%26);  
+	    }
+	  
+	  //leetcode572
+	  public static boolean isSubtree(TreeNode s, TreeNode t) 
+	  {
+	        if(s==null)
+	          return false;
+	        if(isSame(s,t))
+	          return true;
+	        return isSubtree(s.left,t)||isSubtree(s.right,t);
+	  }
+	  
+	  private static boolean isSame(TreeNode s, TreeNode t)
+	  {
+	    if(s==null&&t==null)
+	      return true;
+	    if(s==null||t==null)
+	      return false;
+	    if(s.val!=t.val)
+	      return false;
+	    return isSame(s.left,t.left)&&isSame(s.right,t.right);
+	  }
+	  
+	  //leetcode674
+	  public static int findLengthOfLCIS(int[] nums) 
+	  {
+	      if(nums==null||nums.length<2)
+	        return nums.length;
+	      int[] dp=new int[nums.length];
+	      dp[0]=1;
+	      int max=1;
+	      for(int i=1;i<dp.length;i++)
+	      {
+	        if(nums[i]>nums[i-1])
+	          dp[i]=dp[i-1]+1;
+	        else
+	          dp[i]=1;
+	        max=Math.max(dp[i],max);
+	      }
+	      return max;
+	  }
+	  
+	  //leetcode653
+	  public boolean findTarget(TreeNode root, int k) 
+	  {
+	      HashSet<Integer> set=new HashSet<Integer>();
+	      return dfs(root,set,k);
+	  }
+	  
+	  private boolean dfs(TreeNode root,HashSet<Integer> set,int k)
+	  {
+	     if(root==null)
+	       return false;
+	    if(set.contains(k-root.val))
+	       return true;
+	       set.add(root.val);
+	       return dfs(root.left,set,k)||dfs(root.right,set,k);
+	  }
+	  
+	  //leetcode637
+	  public static List<Double> averageOfLevels(TreeNode root) 
+	  {
+	       List<Double> res=new ArrayList<Double>();
+	       Queue<TreeNode> queue=new LinkedList<TreeNode>();
+	       if(root==null)
+	         return res;
+	       queue.add(root);
+	       while(!queue.isEmpty())
+	       {
+	         double sum=0;
+	         int size=queue.size();
+	         for(int i=0;i<size;i++)
+	         {
+	           TreeNode node=queue.poll();
+	           sum+=node.val;
+	           if(node.left!=null)
+	             queue.offer(node.left);
+	           if(node.right!=null)
+	             queue.offer(node.right);
+	         }
+	         res.add(sum/size);
+	       }
+	    return res;
+	  }
+}
+
+class TreeNode 
+{
+	     int val;
+	     TreeNode left;
+	     TreeNode right;
+	     TreeNode(int x) 
+	     { 
+	       val = x; 
+	     }
+}
+
+//leetcode380
+class RandomizedSet
+{
+	ArrayList<Integer> list;
+	HashMap<Integer,Integer> location=new HashMap<Integer,Integer>();
+/** Initialize your data structure here. */
+public RandomizedSet() 
+{
+    list=new ArrayList<Integer>();
+    location=new HashMap<Integer,Integer>();
+}
+
+/** Inserts a value to the set. Returns true if the set did not already contain the specified element. */
+public boolean insert(int val) 
+{
+  if(location.containsKey(val))
+    return false;
+  else
+  {
+    location.put(val,list.size());
+    list.add(val);
+    return true;
+  }
+}
+
+/** Removes a value from the set. Returns true if the set contained the specified element. */
+public boolean remove(int val) 
+{
+    if(!location.containsKey(val))
+      return false;
+    else
+    {
+      int index=location.get(val);
+      if(index<list.size()-1)
+      {
+        int last=list.get(list.size()-1);
+        list.set(index,last);
+        location.put(last,index);
+      }
+      location.remove(val);
+      list.remove(list.size()-1);
+      return true;
+    }
+}
+
+/** Get a random element from the set. */
+public int getRandom() 
+{
+    int index=(int)(Math.random()*list.size());
+    return list.get(index);
+}
+}
+
+//leetcode208
+
+class ListNode {
+    int val;
+    ListNode next;
+    ListNode(int x) { val = x; }
+}
+
+class TrieNode
+{
+    public char val;
+    public boolean isWord;
+    public TrieNode[] children=new TrieNode[26];
+    public TrieNode()
+    {
+    }
+    public TrieNode(char c)
+    {
+       TrieNode node=new TrieNode();
+       node.val=c;
+    }
+    
+}
+class Trie {
+    private TrieNode root;
+
+    /** Initialize your data structure here. */
+    public Trie() 
+    {
+        root=new TrieNode(' ');
+    }
+    
+    /** Inserts a word into the trie. */
+    public void insert(String word) 
+    {
+        TrieNode ws=root;
+        for(int i=0;i<word.length();i++)
+        {
+          char c=word.charAt(i);
+          if(ws.children[c-'a']==null)
+            ws.children[c-'a']=new TrieNode(c);
+          ws=ws.children[c-'a'];
+        }
+        ws.isWord=true;
+    }
+    
+    /** Returns if the word is in the trie. */
+    public boolean search(String word) 
+    {
+        TrieNode ws=root;
+        for(int i=0;i<word.length();i++)
+        {
+          char c=word.charAt(i);
+          if(ws.children[c-'a']==null)
+            return false;
+          ws=ws.children[c-'a'];
+        }
+        return ws.isWord;
+    }
+    
+    /** Returns if there is any word in the trie that starts with the given prefix. */
+    public boolean startsWith(String prefix) 
+    {
+         TrieNode ws=root;
+         for(int i=0;i<prefix.length();i++)
+         {
+           char c=prefix.charAt(i);
+           if(ws.children[c-'a']==null)
+            return false;
+           ws=ws.children[c-'a'];
+         }
+         return true;
+    }
+}
