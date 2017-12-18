@@ -1,0 +1,366 @@
+	//leetcode647
+int count = 0;
+    
+    public int countSubstrings(String s) {
+        if (s == null || s.length() == 0) return 0;
+        
+        for (int i = 0; i < s.length(); i++) { // i is the mid point
+            extendPalindrome(s, i, i); // odd length;
+            extendPalindrome(s, i, i + 1); // even length
+        }
+        
+        return count;
+    }
+    
+    private void extendPalindrome(String s, int left, int right) {
+        while (left >=0 && right < s.length() && s.charAt(left) == s.charAt(right)) {
+            count++; left--; right++;
+        }
+    }
+    
+    //leetcode50
+    public double myPow(double x, int n) {
+        double temp=x;
+       int m=n;
+           if(m==0)
+           return 1;
+           temp=myPow(x,m/2);
+           if(m%2==0)
+           return temp*temp;
+           else 
+           {
+           if(m > 0)
+               return x*temp*temp;
+           else
+               return (temp*temp)/x;
+           }
+   }
+    
+    //leetcode117
+    public void connect(TreeLinkNode root) {
+        while(root != null){
+             TreeLinkNode tempChild = new TreeLinkNode(0);
+             TreeLinkNode currentChild = tempChild;
+             while(root!=null){
+                 if(root.left != null) { currentChild.next = root.left; currentChild = currentChild.next;}
+                 if(root.right != null) { currentChild.next = root.right; currentChild = currentChild.next;}
+                 root = root.next;
+             }
+             root = tempChild.next;
+         }
+        }
+    
+    //leetcode210
+    public int[] findOrder(int numCourses, int[][] prerequisites) 
+    {
+       if(numCourses==0)
+         return null;
+       int indegree[]=new int[numCourses],order[]=new int[numCourses],index=0;
+       for(int i=0;i<prerequisites.length;i++)
+         indegree[prerequisites[i][0]]++;
+       Queue<Integer> queue=new LinkedList<Integer>();
+       for(int i=0;i<numCourses;i++)
+       {
+         if(indegree[i]==0)
+         {
+           order[index++]=i;
+           queue.offer(i);
+         }
+       }
+      
+      while(!queue.isEmpty())
+      {
+        int pre=queue.poll();
+        for(int i=0;i<prerequisites.length;i++)
+        {
+          if(prerequisites[i][1]==pre)
+          {
+            indegree[prerequisites[i][0]]--;
+            if(indegree[prerequisites[i][0]]==0)
+            {
+              order[index++]=prerequisites[i][0];
+              queue.offer(prerequisites[i][0]);
+            }
+          }
+        }
+      }
+      return (index==numCourses)?order:new int[0];
+   }
+    
+    //leetcode221
+    public int maximalSquare(char[][] matrix) 
+    {
+        if(matrix.length==0)
+          return 0;
+        int m=matrix.length;
+        int n=matrix[0].length;
+        int res=0;
+        int[][] b=new int[m+1][n+1];
+        for(int i=1;i<=m;i++)
+          for(int j=1;j<=n;j++)
+          {
+            if(matrix[i-1][j-1]=='1')
+            {
+              b[i][j]=Math.min(Math.min(b[i][j-1],b[i-1][j-1]),b[i-1][j])+1;
+              res=Math.max(b[i][j],res);
+            }
+          }
+      return res*res; 
+    }
+    
+    //leetcode274
+    public int hIndex(int[] citations) 
+    {
+        int length = citations.length;
+          if (length == 0) {
+            return 0;
+          }
+          
+          int[] array2 = new int[length + 1];
+          for (int i = 0; i < length; i++) {
+            if (citations[i] > length) {
+              array2[length] += 1;
+            } else {
+              array2[citations[i]] += 1;
+            }
+          }
+          int t = 0;
+          int result = 0;
+
+          for (int i = length; i >= 0; i--) {
+            t = t + array2[i];
+            if (t >= i) {
+              return i;
+            }
+          }
+          return 0;
+    }
+    
+    //leetcode714
+    public int maxProfit(int[] prices, int fee) 
+    {
+        int l=prices.length;
+        int[] hold=new int[l+1];
+        int[] notHold=new int[l+1];
+        hold[0]=Integer.MIN_VALUE;
+        for(int i=1;i<=l;i++)
+        {
+          hold[i]=Math.max(hold[i-1],notHold[i-1]-prices[i-1]-fee);
+          notHold[i]=Math.max(notHold[i-1],hold[i-1]+prices[i-1]);
+        }
+        return notHold[l];
+    }
+    
+    //leetcode80
+    public static int removeDuplicates(int[] nums) 
+    {
+        int i=0;
+        for(int n:nums)
+        {
+          if(i<2||n>nums[i-2])
+            nums[i++]=n;
+        }
+        return i;
+   }
+    
+    //leetcode525
+    public int findMaxLength(int[] nums) {
+        for (int i = 0; i < nums.length; i++) {
+             if (nums[i] == 0) nums[i] = -1;
+         }
+         
+         Map<Integer, Integer> sumToIndex = new HashMap<Integer, Integer>();
+         sumToIndex.put(0, -1);
+         int sum = 0, max = 0;
+         
+         for (int i = 0; i < nums.length; i++) {
+             sum += nums[i];
+             if (sumToIndex.containsKey(sum)) {
+                 max = Math.max(max, i - sumToIndex.get(sum));
+             }
+             else {
+                 sumToIndex.put(sum, i);
+             }
+         }
+         
+         return max;
+     }
+    
+    //leetcode721
+    public static List<List<String>> accountsMerge(List<List<String>> accounts) 
+    {
+       List<List<String>> res=new ArrayList<List<String>>();
+       Map<String,Node> map=new HashMap<String, Node>();
+      
+      for(List<String> list:accounts)
+      {
+        for(int j=1;j<list.size();j++)
+        {
+          String email=list.get(j);
+          if(!map.containsKey(email))
+          {
+            Node node=new Node(email,list.get(0));
+            map.put(email,node);
+          }
+          
+          if(j==1)
+            continue;
+          
+          map.get(list.get(j-1)).neighbours.add(map.get(email));
+          map.get(email).neighbours.add(map.get(list.get(j-1)));
+        }
+      }
+      
+      Set<String> visited=new HashSet<String>();
+      for(String s:map.keySet())
+      {
+        if(visited.add(s))
+        {
+          List<String> list=new LinkedList<String>();
+          list.add(s);
+          dfs(map.get(s),visited,list);
+          Collections.sort(list);
+          list.add(0,map.get(s).username);
+          res.add(list);
+        }
+      }
+      return res;
+   }
+   
+   private static void dfs(Node root,Set<String> visited,List<String> list)
+   {
+     for(Node node:root.neighbours)
+     {
+       if(visited.add(node.val))
+       {
+         list.add(node.val);
+         dfs(node,visited,list);
+       }
+     }
+   }
+   
+   //leetcode673
+   public int findNumberOfLIS(int[] nums) {
+	   int n = nums.length, res = 0, max_len = 0;
+	        int[] len =  new int[n], cnt = new int[n];
+	        for(int i = 0; i<n; i++){
+	            len[i] = cnt[i] = 1;
+	            for(int j = 0; j <i ; j++){
+	                if(nums[i] > nums[j]){
+	                    if(len[i] == len[j] + 1)cnt[i] += cnt[j];
+	                    if(len[i] < len[j] + 1){
+	                        len[i] = len[j] + 1;
+	                        cnt[i] = cnt[j];
+	                    }
+	                }
+	            }
+	            if(max_len == len[i])res += cnt[i];
+	            if(max_len < len[i]){
+	                max_len = len[i];
+	                res = cnt[i];
+	            }
+	        }
+	        return res;
+	    }
+   
+   //leetcode275
+   public int hIndex2(int[] citations) 
+   {
+      int left=0,len=citations.length,right=len-1,mid;
+      while(left<=right)
+      {
+        mid=(right+left)/2;
+        if(citations[mid]>=(len-mid))
+          right=mid-1;
+        else
+          left=mid+1;
+      }
+     return len-left;
+   }
+
+
+  //leetcode261
+   public static boolean validTree(int n,int[][] edges)
+   {
+     if(edges==null)
+       return false;
+     int[] union=new int[n];
+     Arrays.fill(union,-1);
+     for(int[] edge:edges)
+     {
+       int x=findUnion(union,edge[0]);
+       int y=findUnion(union,edge[1]);
+       if(x==y)
+         return false;
+       union[y]=x;
+     }
+     return edges.length==n-1;
+   }
+   
+   private static int findUnion(int[] union,int i)
+   {
+     if(union[i]==-1)
+       return i;
+     return findUnion(union,union[i]);
+   }
+   
+   //578 SQL
+   /*SELECT question_id AS survey_log FROM
+   (SELECT question_id, COUNT(*) AS answer_count
+   FROM survey_log
+   WHERE ACTION = 'answer'
+   GROUP BY question_id) a
+   RIGHT JOIN
+   (SELECT question_id, COUNT(*) AS action_count
+   FROM survey_log
+   GROUP BY question_id) b
+   USING (question_id)
+   LEFT JOIN
+   (SELECT question_id, COUNT(*) AS show_count
+   FROM survey_log
+   WHERE ACTION = 'show'
+   GROUP BY question_id) c
+   USING (question_id)
+ORDER BY answer_count / show_count DESC
+LIMIT 1*/
+}
+
+class ListNode {
+	    int val;
+        ListNode next;
+	    ListNode(int x) { val = x; }
+}
+
+class Node
+{
+  String val;//email
+  String username;
+  List<Node> neighbours;
+  Node(String val,String username)
+  {
+    this.val=val;
+    this.username=username;
+    this.neighbours=new ArrayList<Node>();
+  }
+}
+
+class TreeLinkNode {
+    int val;
+    TreeLinkNode left, right, next;
+    TreeLinkNode(int x) { val = x; }
+}
+
+class Codec {
+List<String> urls = new ArrayList<String>();
+    // Encodes a URL to a shortened URL.
+    public String encode(String longUrl) {
+        urls.add(longUrl);
+        return String.valueOf(urls.size()-1);
+    }
+
+    // Decodes a shortened URL to its original URL.
+    public String decode(String shortUrl) {
+        int index = Integer.valueOf(shortUrl);
+        return (index<urls.size())?urls.get(index):"";
+    }
+}
