@@ -1,0 +1,450 @@
+//leetcode3
+public int lengthOfLongestSubstring(String s) {
+         if (s.length()==0) return 0;
+        HashMap<Character, Integer> map = new HashMap<Character, Integer>();
+        int max=0;
+        for (int i=0, j=0; i<s.length(); ++i){
+            if (map.containsKey(s.charAt(i))){
+                j = Math.max(j,map.get(s.charAt(i))+1);
+            }
+            map.put(s.charAt(i),i);
+            max = Math.max(max,i-j+1);
+        }
+        return max;
+    }
+    
+//leetcode8
+public static int myAtoi(String str) {
+	if (str == null || str.length() == 0)
+		return 0;//
+	str = str.trim();
+	char firstChar = str.charAt(0);
+	int sign = 1, start = 0, len = str.length();
+	long sum = 0;
+	if (firstChar == '+') {
+		sign = 1;
+		start++;
+	} else if (firstChar == '-') {
+		sign = -1;
+		start++;
+	}
+	for (int i = start; i < len; i++) {
+		if (!Character.isDigit(str.charAt(i)))
+			return (int) sum * sign;
+		sum = sum * 10 + str.charAt(i) - '0';
+		if (sign == 1 && sum > Integer.MAX_VALUE)
+			return Integer.MAX_VALUE;
+		if (sign == -1 && (-1) * sum < Integer.MIN_VALUE)
+			return Integer.MIN_VALUE;
+	}
+
+	return (int) sum * sign;
+}
+
+//leetcode14
+public String longestCommonPrefix(String[] strs) {
+        if(strs == null || strs.length == 0)    return "";
+    String pre = strs[0];
+    int i = 1;
+    while(i < strs.length){
+        while(strs[i].indexOf(pre) != 0)
+            pre = pre.substring(0,pre.length()-1);
+        i++;
+    }
+    return pre;
+    }
+    
+//leetcode18
+public List<List<Integer>> fourSum(int[] nums, int target) {
+		ArrayList<List<Integer>> res = new ArrayList<List<Integer>>();
+		int len = nums.length;
+		if (nums == null || len < 4)
+			return res;
+
+		Arrays.sort(nums);
+
+		int max = nums[len - 1];
+		if (4 * nums[0] > target || 4 * max < target)
+			return res;
+
+		int i, z;
+		for (i = 0; i < len; i++) {
+			z = nums[i];
+			if (i > 0 && z == nums[i - 1])// avoid duplicate
+				continue;
+			if (z + 3 * max < target) // z is too small
+				continue;
+			if (4 * z > target) // z is too large
+				break;
+			if (4 * z == target) { // z is the boundary
+				if (i + 3 < len && nums[i + 3] == z)
+					res.add(Arrays.asList(z, z, z, z));
+				break;
+			}
+
+			threeSumForFourSum(nums, target - z, i + 1, len - 1, res, z);
+		}
+
+		return res;
+	}
+
+	/*
+	 * Find all possible distinguished three numbers adding up to the target
+	 * in sorted array nums[] between indices low and high. If there are,
+	 * add all of them into the ArrayList fourSumList, using
+	 * fourSumList.add(Arrays.asList(z1, the three numbers))
+	 */
+	public void threeSumForFourSum(int[] nums, int target, int low, int high, ArrayList<List<Integer>> fourSumList,
+			int z1) {
+		if (low + 1 >= high)
+			return;
+
+		int max = nums[high];
+		if (3 * nums[low] > target || 3 * max < target)
+			return;
+
+		int i, z;
+		for (i = low; i < high - 1; i++) {
+			z = nums[i];
+			if (i > low && z == nums[i - 1]) // avoid duplicate
+				continue;
+			if (z + 2 * max < target) // z is too small
+				continue;
+
+			if (3 * z > target) // z is too large
+				break;
+
+			if (3 * z == target) { // z is the boundary
+				if (i + 1 < high && nums[i + 2] == z)
+					fourSumList.add(Arrays.asList(z1, z, z, z));
+				break;
+			}
+
+			twoSumForFourSum(nums, target - z, i + 1, high, fourSumList, z1, z);
+		}
+
+	}
+
+	/*
+	 * Find all possible distinguished two numbers adding up to the target
+	 * in sorted array nums[] between indices low and high. If there are,
+	 * add all of them into the ArrayList fourSumList, using
+	 * fourSumList.add(Arrays.asList(z1, z2, the two numbers))
+	 */
+	public void twoSumForFourSum(int[] nums, int target, int low, int high, ArrayList<List<Integer>> fourSumList,
+			int z1, int z2) {
+
+		if (low >= high)
+			return;
+
+		if (2 * nums[low] > target || 2 * nums[high] < target)
+			return;
+
+		int i = low, j = high, sum, x;
+		while (i < j) {
+			sum = nums[i] + nums[j];
+			if (sum == target) {
+				fourSumList.add(Arrays.asList(z1, z2, nums[i], nums[j]));
+
+				x = nums[i];
+				while (++i < j && x == nums[i]) // avoid duplicate
+					;
+				x = nums[j];
+				while (i < --j && x == nums[j]) // avoid duplicate
+					;
+			}
+			if (sum < target)
+				i++;
+			if (sum > target)
+				j--;
+		}
+		return;
+	}
+  
+  //leetcode34
+  public int[] searchRange(int[] A, int target) {
+		int start = Solution.firstGreaterEqual(A, target);
+		if (start == A.length || A[start] != target) {
+			return new int[]{-1, -1};
+		}
+		return new int[]{start, Solution.firstGreaterEqual(A, target + 1) - 1};
+	}
+
+	//find the first number that is greater than or equal to target.
+	//could return A.length if target is greater than A[A.length-1].
+	//actually this is the same as lower_bound in C++ STL.
+	private static int firstGreaterEqual(int[] A, int target) {
+		int low = 0, high = A.length;
+		while (low < high) {
+			int mid = low + ((high - low) >> 1);
+			//low <= mid < high
+			if (A[mid] < target) {
+				low = mid + 1;
+			} else {
+				high = mid;
+			}
+		}
+		return low;
+	}
+  
+  //leetcode36
+  public boolean isValidSudoku(char[][] board) {
+        for(int i = 0; i<9; i++){
+        HashSet<Character> rows = new HashSet<Character>();
+        HashSet<Character> columns = new HashSet<Character>();
+        HashSet<Character> cube = new HashSet<Character>();
+        for (int j = 0; j < 9;j++){
+            if(board[i][j]!='.' && !rows.add(board[i][j]))
+                return false;
+            if(board[j][i]!='.' && !columns.add(board[j][i]))
+                return false;
+            int RowIndex = 3*(i/3);
+            int ColIndex = 3*(i%3);
+            if(board[RowIndex + j/3][ColIndex + j%3]!='.' && !cube.add(board[RowIndex + j/3][ColIndex + j%3]))
+                return false;
+        }
+    }
+    return true;
+    }
+    
+    //leetcode46
+       public List<List<Integer>> permute(int[] nums) {
+   List<List<Integer>> list = new ArrayList<>();
+   backtrack(list, new ArrayList<>(), nums);
+   return list;
+}
+
+private void backtrack(List<List<Integer>> list, List<Integer> tempList, int [] nums){
+   if(tempList.size() == nums.length){
+      list.add(new ArrayList<>(tempList));
+   } else{
+      for(int i = 0; i < nums.length; i++){ 
+         if(tempList.contains(nums[i])) 
+             continue; // element already exists, skip
+         tempList.add(nums[i]);
+         backtrack(list, tempList, nums);
+         tempList.remove(tempList.size() - 1);
+      }
+   }
+} 
+
+//leetcode47
+public List<List<Integer>> permuteUnique(int[] nums) {
+    List<List<Integer>> list = new ArrayList<>();
+    Arrays.sort(nums);
+    backtrack(list, new ArrayList<>(), nums, new boolean[nums.length]);
+    return list;
+}
+
+private void backtrack(List<List<Integer>> list, List<Integer> tempList, int [] nums, boolean [] used){
+    if(tempList.size() == nums.length){
+        list.add(new ArrayList<>(tempList));
+    } else{
+        for(int i = 0; i < nums.length; i++){
+            if(used[i] || i > 0 && nums[i] == nums[i-1] && !used[i - 1]) continue;
+            used[i] = true; 
+            tempList.add(nums[i]);
+            backtrack(list, tempList, nums, used);
+            used[i] = false; 
+            tempList.remove(tempList.size() - 1);
+        }
+    }
+}
+
+//leetcode62
+ public int uniquePaths(int m, int n) 
+    {
+        int[][] map=new int[m][n];
+        for(int i=0;i<m;i++)
+            map[i][0]=1;
+        for(int j=0;j<n;j++)
+            map[0][j]=1;
+        for(int i=1;i<m;i++)
+            for(int j=1;j<n;j++)
+                map[i][j]=map[i-1][j]+map[i][j-1];
+        return map[m-1][n-1];
+    }
+    
+//leetcode55
+ public boolean canJump(int[] nums) 
+    {
+        int max=0;
+        for(int i=0;i<nums.length;i++)
+        {
+          if(i>max)
+              return false;
+          max=Math.max(nums[i]+i,max);
+        }
+        return true;
+    }
+    
+//leetcode81
+ public boolean search(int[] nums, int target) {
+        int start = 0, end = nums.length - 1, mid = -1;
+        while(start <= end) {
+            mid = (start + end) / 2;
+            if (nums[mid] == target) {
+                return true;
+            }
+            //If we know for sure right side is sorted or left side is unsorted
+            if (nums[mid] < nums[end] || nums[mid] < nums[start]) {
+                if (target > nums[mid] && target <= nums[end]) {
+                    start = mid + 1;
+                } else {
+                    end = mid - 1;
+                }
+            //If we know for sure left side is sorted or right side is unsorted
+            } else if (nums[mid] > nums[start] || nums[mid] > nums[end]) {
+                if (target < nums[mid] && target >= nums[start]) {
+                    end = mid - 1;
+                } else {
+                    start = mid + 1;
+                }
+            } else {
+                end--;
+            }
+        }
+        
+        return false;
+    }
+//leetcode101
+public boolean isSymmetric(TreeNode root) {
+    if(root==null) return true;
+    return isMirror(root.left,root.right);
+}
+public boolean isMirror(TreeNode p, TreeNode q) {
+    if(p==null && q==null) return true;
+    if(p==null || q==null) return false;
+    return (p.val==q.val) && isMirror(p.left,q.right) && isMirror(p.right,q.left);
+}
+
+//105
+public TreeNode buildTree(int[] preorder, int[] inorder) {
+    return helper(0, 0, inorder.length - 1, preorder, inorder);
+}
+
+public TreeNode helper(int preStart, int inStart, int inEnd, int[] preorder, int[] inorder) {
+    if (preStart > preorder.length - 1 || inStart > inEnd) {
+        return null;
+    }
+    TreeNode root = new TreeNode(preorder[preStart]);
+    int inIndex = 0; // Index of current root in inorder
+    for (int i = inStart; i <= inEnd; i++) {
+        if (inorder[i] == root.val) {
+            inIndex = i;
+        }
+    }
+    root.left = helper(preStart + 1, inStart, inIndex - 1, preorder, inorder);
+    root.right = helper(preStart + inIndex - inStart + 1, inIndex + 1, inEnd, preorder, inorder);
+    return root;
+}
+
+//leetcode108
+  public TreeNode sortedArrayToBST(int[] num) {
+    if (num.length == 0) {
+        return null;
+    }
+    TreeNode head = helper(num, 0, num.length - 1);
+    return head;
+}
+
+public TreeNode helper(int[] num, int low, int high) {
+    if (low > high) { // Done
+        return null;
+    }
+    int mid = (low + high) / 2;
+    TreeNode node = new TreeNode(num[mid]);
+    node.left = helper(num, low, mid - 1);
+    node.right = helper(num, mid + 1, high);
+    return node;
+}
+
+//leetcode114
+private TreeNode prev = null;
+
+    public void flatten(TreeNode root) {
+    if (root == null)
+        return;
+    flatten(root.right);
+    flatten(root.left);
+    root.right = prev;
+    root.left = null;
+    prev = root;
+}
+
+//leetcode152
+ public int maxProduct(int[] nums) {
+        int r=nums[0];
+        for(int i=1,imax=r,imin=r;i<nums.length;i++)
+        {
+            if(nums[i]<0)
+            {
+                int temp=imin;
+                imin=imax;
+                imax=temp;
+            }
+            imax=Math.max(nums[i],imax*nums[i]);
+            imin=Math.min(nums[i],nums[i]*imin);
+            r=Math.max(r,imax);
+        }
+        return r;
+    }
+    
+  //leetcode151
+public String reverseWords(String s) {
+        String[] parts = s.trim().split("\\s+");
+        String out = "";
+        for (int i = parts.length - 1; i > 0; i--) {
+             out += parts[i] + " ";
+}
+return out + parts[0];
+    }
+    
+ //leetcode138
+public RandomListNode copyRandomList(RandomListNode head) {
+  if (head == null) return null;
+  
+  Map<RandomListNode, RandomListNode> map = new HashMap<RandomListNode, RandomListNode>();
+  
+  // loop 1. copy all the nodes
+  RandomListNode node = head;
+  while (node != null) {
+    map.put(node, new RandomListNode(node.label));
+    node = node.next;
+  }
+  
+  // loop 2. assign next and random pointers
+  node = head;
+  while (node != null) {
+    map.get(node).next = map.get(node.next);
+    map.get(node).random = map.get(node.random);
+    node = node.next;
+  }
+  
+  return map.get(head);
+}
+
+//leetcode189
+  public void rotate(int[] nums, int k) {
+
+    if(nums == null || nums.length < 2){
+        return;
+    }
+    
+    k = k % nums.length;
+    reverse(nums, 0, nums.length - k - 1);
+    reverse(nums, nums.length - k, nums.length - 1);
+    reverse(nums, 0, nums.length - 1);
+    
+}
+
+private void reverse(int[] nums, int i, int j){
+    int tmp = 0;       
+    while(i < j){
+        tmp = nums[i];
+        nums[i] = nums[j];
+        nums[j] = tmp;
+        i++;
+        j--;
+    }
+}
