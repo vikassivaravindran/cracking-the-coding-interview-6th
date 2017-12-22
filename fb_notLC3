@@ -380,8 +380,22 @@ public int widthOfBinaryTree(TreeNode root) {
         int right = dfs(root.right, level + 1, 2*order + 1, start, end);
         return Math.max(cur, Math.max(left, right));
     }
-    
-//leetcode652
+ //leetcode652
+   public List<TreeNode> findDuplicateSubtrees(TreeNode root) {
+    List<TreeNode> res = new LinkedList<>();
+    postorder(root, new HashMap<>(), res);
+    return res;
+}
+
+public String postorder(TreeNode cur, Map<String, Integer> map, List<TreeNode> res) {
+    if (cur == null) return "#";  
+    String serial = cur.val + "," + postorder(cur.left, map, res) + "," + postorder(cur.right, map, res);
+    if (map.getOrDefault(serial, 0) == 1) res.add(cur);
+    map.put(serial, map.getOrDefault(serial, 0) + 1);
+    return serial;
+}
+
+//leetcode640
 public String solveEquation(String equation) {
     int[] res = evaluateExpression(equation.split("=")[0]),  
   	  res2 = evaluateExpression(equation.split("=")[1]);
