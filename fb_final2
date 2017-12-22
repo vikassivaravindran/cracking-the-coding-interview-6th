@@ -32,7 +32,7 @@
     			if(A[i][k]==0)
     				continue;
     			else
-    				for(int j=0;j<n;j++)
+    				for(int j=0;j<p;j++)
     					result[i][j]+=(A[i][k]*B[k][j]);
     		}
     	return result;
@@ -208,33 +208,17 @@
     }
     
     //leetcode257
-    public static List<String> binaryTreePaths(TreeNode root) 
-    {
-        List<String> l=new ArrayList<String>();
-        if(root==null)
-        	return l;
-        helper(root,"",l);
-        return l;
-    }
-    
-    private static void helper(TreeNode root,String s,List<String> l)
-    {
-    	if(root.left==null&&root.right==null)
-    	{
-    		s=s+"->"+String.valueOf(root.val);
-    		l.add(s.substring(2));
-    	}
-    	if(root.left!=null)
-    	{
-    		s=s+"->"+String.valueOf(root.val);
-    		helper(root.left,s,l);
-    	}
-    	if(root.right!=null)
-    	{
-    		s=s+"->"+String.valueOf(root.val);
-    		helper(root.right,s,l);
-    	}
-    }
+    public List<String> binaryTreePaths(TreeNode root) {
+    List<String> answer = new ArrayList<String>();
+    if (root != null) searchBT(root, "", answer);
+    return answer;
+}
+private void searchBT(TreeNode root, String path, List<String> answer) {
+    if (root.left == null && root.right == null) answer.add(path + root.val);
+    if (root.left != null) searchBT(root.left, path + root.val + "->", answer);
+    if (root.right != null) searchBT(root.right, path + root.val + "->", answer);
+}
+
 //leetcode297
 class Codec {
     private static final String spliter = ",";
