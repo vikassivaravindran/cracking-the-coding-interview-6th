@@ -184,24 +184,21 @@
 	  }
 	  
 	  //leetcode377
-	  public static int combinationSum4(int[] nums, int target) 
-	   {
-	       Arrays.sort(nums);
-	       int[] res=new int[target+1];
-	       for(int i=1;i<res.length;i++)
-	       {
-	         for(int num:nums)
-	         {
-	           if(num>i)
-	             break;
-	           else if(num==i)
-	             res[i]+=1;
-	           else
-	             res[i]+=res[num-i];
-	         }
-	       }
-	       return res[target];
+	 public int combinationSum4(int[] nums, int target) {
+        Arrays.sort(nums);
+        int[] res = new int[target + 1];
+        for (int i = 1; i < res.length; i++) {
+	    for (int num : nums) {
+	        if (num > i)
+		    break;
+		else if (num == i)
+		    res[i] += 1;
+		else
+		    res[i] += res[i-num];
 	    }
+	}
+        return res[target];
+    }
 	  
 	  //leetcode127 BFS
 	  public int ladderLength(String beginWord, String endWord, List<String> wordList) 
