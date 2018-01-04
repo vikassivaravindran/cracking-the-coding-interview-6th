@@ -200,51 +200,42 @@
         return res[target];
     }
 	  
-	  //leetcode127 BFS
-	  public int ladderLength(String beginWord, String endWord, List<String> wordList) 
-	   {
-	        if(!wordList.contains(endWord))
-	          return 0;
-	        Set<String> beginSet=new HashSet<String>();
-	        Set<String> endSet=new HashSet<String>();
-	        Set<String> visited=new HashSet<String>();
-	        int len=1;
-	        beginSet.add(beginWord);
-	        endSet.add(endWord);
-	        while(!beginSet.isEmpty()&&!endSet.isEmpty())
-	        {
-	          if(beginSet.size()>endSet.size())
-	          {
-	            Set<String> temp=beginSet;
-	            beginSet=endSet;
-	            endSet=temp;
-	          }
-	          
-	          Set<String> temp=new HashSet<String>();
-	          for(String s:beginSet)
-	          {
-	            for(int i=0;i<s.length();i++)
-	            {
-	              StringBuilder sb=new StringBuilder();
-	              for(char j='a';j<='z';j++)
-	              {
-	                sb.setCharAt(i,j);
-	                if(endSet.contains(sb.toString()))
-	                   return len+1;
-	                if(!visited.contains(sb.toString())&&wordList.contains(sb.toString()))
-	                   {
-	                     visited.add(sb.toString());
-	                     temp.add(sb.toString());
-	                   }
-	              }
-	            }
-	          }
-	                   len++;
-	                   beginSet=temp;
-	        }
-	                   return 0;
-	    }
-	  
+	  //leetcode127 BFS**
+	  public int ladderLength(String beginWord, String endWord, List<String> wordList) {
+        if (!wordList.contains(endWord)) return 0;
+        HashSet<String> set = new HashSet<String>(wordList);
+        Queue<String> q = new LinkedList<String>();
+        int length = 0;
+        set.add(endWord);
+        q.add(beginWord);
+        
+        while (!q.isEmpty()) {
+            int size = q.size();
+            for (int i = 0; i < size; i++) {
+                String w = q.poll();
+                if (w.equals(endWord)) return length + 1;
+                wordMatch(w, set, q);
+            }
+            length++;
+        }
+        return 0;
+    }
+    
+    public void wordMatch(String w, Set<String> set, Queue<String> q) {
+        for (int i = 0; i < w.length(); i++) {
+            char[] word = w.toCharArray();
+            for (int j = 0; j < 26; j++) {
+                char c = (char) ('a' + j);
+                if (word[i] == c) continue;
+                word[i] = c;
+                String s = String.valueOf(word);
+                if (set.contains(s)) {
+                    set.remove(s);
+                    q.offer(s);
+                }
+            }
+        }
+    }
 	  //leetcode334
 	  public static boolean increasingTriplet(int[] nums) 
 	   {
