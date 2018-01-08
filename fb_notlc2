@@ -360,17 +360,22 @@ public TreeNode helper(int[] num, int low, int high) {
 }
 
 //leetcode114
-private TreeNode prev = null;
-
-    public void flatten(TreeNode root) {
-    if (root == null)
-        return;
-    flatten(root.right);
-    flatten(root.left);
-    root.right = prev;
-    root.left = null;
-    prev = root;
-}
+public void flatten(TreeNode root) {
+        if (root == null) return;
+        
+        TreeNode left = root.left;
+        TreeNode right = root.right;
+        
+        root.left = null;
+        
+        flatten(left);
+        flatten(right);
+        
+        root.right = left;
+        TreeNode cur = root;
+        while (cur.right != null) cur = cur.right;
+        cur.right = right;
+    }
 
 //leetcode152
  public int maxProduct(int[] nums) {
