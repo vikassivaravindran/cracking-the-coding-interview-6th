@@ -1,17 +1,13 @@
 //leetcode278
     public static int firstBadVersion(int n) 
     {
-        int start=1;
-        int end=n;
-        while(start<end)
-        {
-        	int mid=(start+end)/2;
-        	if(isBadVersion(mid))
-        		end=mid;
-        	else
-        		start=mid+1;
-        } 
-        return start;
+       int start = 1, end = n;
+    while (start < end) {
+        int mid = start + (end-start) / 2;
+        if (!isBadVersion(mid)) start = mid + 1;
+        else end = mid;            
+    }        
+    return start;
     }
     
     private static boolean isBadVersion(int version)
@@ -22,20 +18,20 @@
     //leetcode311 matrix*matrix
     public static int[][] multiply(int[][] A,int[][] B)
     {
-    	int m=A.length;
-    	int p=B[0].length;
-    	int n=A[0].length;
-    	int[][] result=new int[m][p];
-    	for(int i=0;i<m;i++)
-    		for(int k=0;k<n;k++)
-    		{
-    			if(A[i][k]==0)
-    				continue;
-    			else
-    				for(int j=0;j<p;j++)
-    					result[i][j]+=(A[i][k]*B[k][j]);
-    		}
-    	return result;
+    	int n=A.length;
+		int m=A[0].length;
+		int p=B[0].length;
+		int[][] res=new int[n][p];
+		for(int k=0;k<m;k++)
+		for(int i=0;i<n;i++)
+			{
+				if(A[i][k]!=0)
+					for(int j=0;j<p;j++)
+					{
+						res[i][j]+=(A[i][k]*B[k][j]);
+					}
+			}
+		return res;
     }
     
     //leetcode314
@@ -102,6 +98,31 @@
         }
         return r;
     }
+    
+   // without sorting
+    public List<List<Integer>> threeSum(int[] nums) {
+        List<List<Integer>> res = new ArrayList<>();
+        Set<Integer> firstNum = new HashSet<>();
+        for (int i = 0; i < nums.length - 2; i++){
+            if (!firstNum.contains(nums[i])) {
+                int sum = -nums[i];
+                Set<Integer> secondNum = new HashSet<>();
+                Set<Integer> thirdNum = new HashSet<>();
+                for (int j = i + 1; j < nums.length; j++){
+                    if (!firstNum.contains(nums[j]) && !thirdNum.contains(nums[j])){
+                        if (secondNum.contains(sum - nums[j])){
+                            res.add(Arrays.asList(nums[i], nums[j], sum - nums[j]));
+                            thirdNum.add(nums[j]);
+                        }
+                        else{
+                            secondNum.add(nums[j]);
+                        }
+                    }
+                }
+                firstNum.add(nums[i]);
+            }
+        }
+        return res
     
     //leetcode56
     public List<Interval> merge(List<Interval> intervals) 
