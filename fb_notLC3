@@ -419,60 +419,36 @@ public int[] evaluateExpression(String exp) {
 }
 
 树中最大路径：
- public static void printMaxSumPath(TreeNode root)
-     {
-    	 List<TreeNode> p=new ArrayList<TreeNode>();
-    	 ArrayList<ArrayList> p2=new ArrayList<ArrayList>();
-    	 FindMaxSumPath(p2,root,0,p,0);
-    	 if(p2.size()==0)
-    	 {
-    		 System.out.println("The tree is empty!");
-    		 return;
-    	 }
-    	 int index=0;
-    	 int max=0;
-    	 for(int i=0;i<p2.size();i++)// find which path is the max
-    	 {
-    		 List<TreeNode> temp=new ArrayList<TreeNode>();
-    		 temp=p2.get(i);
-    		 if(temp.get(temp.size()-1).val>max)
-    		 {
-    			 max=temp.get(temp.size()-1).val;
-    			 index=i;
-    		 }
-    	 }
-    	 System.out.println("The maxSumPath is: ");
-    	 List<TreeNode> temp=new ArrayList<TreeNode>();
-		 temp=p2.get(index);
-    	 for(int i=0;i<temp.size()-1;i++)
-    	 {
-    		 System.out.print(temp.get(i).val+" ");
-    	 }
-     }
-     
-     private static void FindMaxSumPath(ArrayList<ArrayList> p2,TreeNode root,int currentSum,List<TreeNode> p,int level)
-     {
-    	 if(root==null)
-    		 return ;
-    	 currentSum+=root.val;
-    	 List<TreeNode> p3=new ArrayList<TreeNode>();
-    	 for(int i=0;i<level;i++)
-    		 p3.add(p.get(i));
-    	 p=p3;
-    	 p.add(root);
-    	 if(root.left==null&&root.right==null)
-    	 {
-    		 TreeNode sum=new TreeNode(currentSum);//add every sum to the end for selecting
-    		 p.add(sum);
-    		 p2.add((ArrayList) p);
-    	 } 
-    	 FindMaxSumPath(p2,root.left,currentSum,p,level+1);
-    	 FindMaxSumPath(p2,root.right,currentSum,p,level+1);
-     }
-
-
-        }
-        return start;
+  static int max=0;
+  static List<TreeNode> path2=new ArrayList<TreeNode>();
+  public static List<TreeNode> maxSumPath(TreeNode root)
+  {
+    if(root==null)
+      return null;
+    List<TreeNode> path=new ArrayList<TreeNode>();
+    helper(root,path,0);
+    return path2;
+  }
+  
+  private static void helper(TreeNode root,List<TreeNode> path,int currentSum)
+  {
+    if(root==null)
+    {
+      if(currentSum>max)
+      {
+        path2=path;
+        max=currentSum;
+      }
+      return;
     }
     
+    else
+    {
+      path.add(root);
+      currentSum+=root.val;
+      List<TreeNode> p=new ArrayList<TreeNode>(path);
+      helper(root.left,path,currentSum);
+      helper(root.right,p,currentSum);
+    }
+  }
  
