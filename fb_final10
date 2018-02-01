@@ -1,1 +1,335 @@
+//29
+  public int divide(int dividend, int divisor) 
+  {
+        
+    if(divisor==0)
+      return Integer.MAX_VALUE;
+        int sign=1;
+    if((dividend>0&&divisor<0)||(dividend<0&&divisor>0))
+      sign=-1;
+         long d1=Math.abs((long)dividend);
+    long d2=Math.abs((long)divisor);
+    if((d1<d2&&sign==1)||d1==0)
+      return 0;
+    long ans=helper(d1,d2);
+    int res;
+    if(ans>Integer.MAX_VALUE)
+    {
+      if(sign==1)
+        res=Integer.MAX_VALUE;
+      else
+        res=Integer.MIN_VALUE;
+    }
+    else
+      res=(int)(ans*sign);
+    return res;
+  }
+  
+  private long helper(long d1,long d2)
+  {
+    if(d1<d2)
+      return 0;
+    long sum=d2;
+    long mul=1;
+    while(sum+sum<=d1)
+    {
+      sum+=sum;
+      mul+=mul;
+    }
+    return mul+helper(d1-sum,d2);
+  }
+
+//39
+public List<List<Integer>> combinationSum(int[] candidates, int target) 
+ {
+   List<List<Integer>> res=new ArrayList<>();
+   Arrays.sort(candidates);
+   helper(res,new ArrayList<Integer>(),candidates, target,0);
+   return res;
+ }
+  
+  private void helper(List<List<Integer>> res,ArrayList<Integer> temp,int[] candidates, int target,int pos)
+  {
+    if(target<0)
+      return;
+    else if(target==0)
+    {
+      res.add(new ArrayList<>(temp));
+      return;
+    }
+    else
+    {
+      for(int i=pos;i<candidates.length;i++)
+      {
+        temp.add(candidates[i]);
+        helper(res,temp,candidates,target-candidates[i],i);
+        temp.remove(temp.size()-1);
+      }
+    }
+  }
+
+
+//53
+public int maxSubArray(int[] nums) 
+ {
+    int max=nums[0];
+   int end=nums[0];
+   for(int i=1;i<nums.length;i++)
+   {
+     max=Math.max(nums[i],max+nums[i]);
+     end=Math.max(end,max);
+   }
+   return end;
+ }
+ 
+ //leetcode73
+   public void setZeroes(int[][] matrix) 
+  {
+    if(matrix==null||matrix.length==0)
+      return;
+    int n=matrix.length;
+    int m=matrix[0].length;
+    boolean rowHas0=false;
+    boolean colHas0=false;
+    for(int i=0;i<n;i++)
+    {
+      if(matrix[i][0]==0)
+      {
+        colHas0=true;
+        break;
+      }
+    }
+    for(int i=0;i<m;i++)
+    {
+      if(matrix[0][i]==0)
+      {
+        rowHas0=true;
+        break;
+      }
+    }
+    
+    for(int i=1;i<n;i++)
+      for(int j=1;j<m;j++)
+      {
+        if(matrix[i][j]==0)
+        {
+          matrix[0][j]=0;
+          matrix[i][0]=0;
+        }
+      }
+    
+    for(int i=1;i<n;i++)
+    {
+      if(matrix[i][0]==0)
+        Full0Row(matrix,i,n,m);       
+    }
+    
+    for(int i=1;i<m;i++)
+    {
+      if(matrix[0][i]==0)
+        Full0Col(matrix,i,n,m);
+    }
+    
+    if(rowHas0)
+    {
+      Full0Row(matrix,0,n,m);
+    }
+    
+    if(colHas0)
+      Full0Col(matrix,0,n,m);
+  }
+  
+  private void Full0Row(int[][] m1,int k,int n,int m)
+  {
+    for(int i=0;i<m;i++)
+    {
+      m1[k][i]=0;
+    }
+  }
+  
+  private void Full0Col(int[][] m1,int k,int n,int m)
+  {
+    for(int i=0;i<n;i++)
+    {
+      m1[i][k]=0;
+    }
+  }
+  
+  //93
+    public List<String> restoreIpAddresses(String s) 
+ {
+    List<String> res=new ArrayList<String>();
+   if(s==null||s.length()<4)
+     return res;
+   int len=s.length();
+  for(int i = 1; i<4 && i<len-2; i++)
+            for(int j = i+1; j<i+4 && j<len-1; j++)
+                for(int k = j+1; k<j+4 && k<len; k++)
+       {
+         String s1=s.substring(0,i);
+         String s2=s.substring(i,j);
+         String s3=s.substring(j,k);
+         String s4=s.substring(k);
+         if(valid(s1)&&valid(s2)&&valid(s3)&&valid(s4))
+           res.add(s1+"."+s2+"."+s3+"."+s4);
+       }
+   return res;
+ }
+  
+  private boolean valid(String s)
+  {
+    if(s.length()>3||s.length()<1||Integer.parseInt(s)>255||(s.charAt(0)=='0'&&s.length()>1))
+      return false;
+    else
+      return true;
+  }
+  
+  //143
+   public void reorderList(ListNode head) {
+            if(head==null||head.next==null) return;
+            
+            //Find the middle of the list
+            ListNode p1=head;
+            ListNode p2=head;
+            while(p2.next!=null&&p2.next.next!=null){ 
+                p1=p1.next;
+                p2=p2.next.next;
+            }
+            
+            //Reverse the half after middle  1->2->3->4->5->6 to 1->2->3->6->5->4
+            ListNode preMiddle=p1;
+            ListNode preCurrent=p1.next;
+            while(preCurrent.next!=null){
+                ListNode current=preCurrent.next;
+                preCurrent.next=current.next;
+                current.next=preMiddle.next;
+                preMiddle.next=current;
+            }
+            
+            //Start reorder one by one  1->2->3->6->5->4 to 1->6->2->5->3->4
+            p1=head;
+            p2=preMiddle.next;
+            while(p1!=preMiddle){
+                preMiddle.next=p2.next;
+                p2.next=p1.next;
+                p1.next=p2;
+                p1=p2.next;
+                p2=preMiddle.next;
+            }
+        }
+        
+        //259
+         public int SumSmaller(int[] nums,int target)
+  {
+    Arrays.sort(nums);
+    int count=0;
+    for(int i=0;i<nums.length;i++)
+    {
+      int left=i+1;
+      int right=len-1;
+      while(left<right)
+      {
+        int mid=nums[i]+nums[left]+nums[right];
+        if(mid<target)
+          count+=(right-left);
+        else
+          right--;
+      }
+    }
+    return count;
+  }
+  
+  //268
+   public int missingNumber(int[] nums) 
+ {
+   int[] res=new int[nums.length+1];
+   for(int i=0;i<res.length;i++)
+   {
+     res[i]=-1;
+   }
+   for(int i=0;i<nums.length;i++)
+   {
+     res[nums[i]]=1;
+   }
+   
+   for(int i=0;i<res.length;i++)
+   {
+     if(res[i]==-1)
+       return i;
+   }
+        return 1;
+ }
+ 
+ //350
+  public int[] intersect(int[] nums1, int[] nums2) 
+ {
+   Map<Integer,Integer> map=new HashMap<Integer,Integer>();
+   for(int i=0;i<nums1.length;i++)
+   {
+     if(map.containsKey(nums1[i]))
+     {
+       int times=map.get(nums1[i]);
+       times+=1;
+       map.put(nums1[i],times);
+     }
+     else
+     {
+       map.put(nums1[i],1);
+     }
+   }
+   List<Integer> res=new ArrayList<Integer>();
+   for(int i=0;i<nums2.length;i++)
+   {
+     if(map.containsKey(nums2[i])&&map.get(nums2[i])>0)
+     {
+       res.add(nums2[i]);
+       int times=map.get(nums2[i]);
+       map.put(nums2[i],times-1);
+     }
+   }
+   int[] r=new int[res.size()];
+   for(int i=0;i<r.length;i++)
+     r[i]=res.get(i);
+   return r;
+ }
+ 
+ //415
+ public String addStrings(String num1, String num2) {
+        StringBuilder sb = new StringBuilder();
+        int carry = 0;
+        for(int i = num1.length() - 1, j = num2.length() - 1; i >= 0 || j >= 0 || carry == 1; i--, j--){
+            int x = i < 0 ? 0 : num1.charAt(i) - '0';
+            int y = j < 0 ? 0 : num2.charAt(j) - '0';
+            sb.append((x + y + carry) % 10);
+            carry = (x + y + carry) / 10;
+        }
+        return sb.reverse().toString();
+    }
+    
+    //393
+    public boolean validUtf8(int[] data) {
+	if(data==null || data.length==0) return false;
+	boolean isValid = true;
+	for(int i=0;i<data.length;i++) {
+		if(data[i]>255) return false; // 1 after 8th digit, 100000000
+		int numberOfBytes = 0;
+		if((data[i] & 128) == 0) { // 0xxxxxxx, 1 byte, 128(10000000)
+			numberOfBytes = 1;
+		} else if((data[i] & 224) == 192) { // 110xxxxx, 2 bytes, 224(11100000), 192(11000000)
+			numberOfBytes = 2;
+		} else if((data[i] & 240) == 224) { // 1110xxxx, 3 bytes, 240(11110000), 224(11100000)
+			numberOfBytes = 3;
+		} else if((data[i] & 248) == 240) { // 11110xxx, 4 bytes, 248(11111000), 240(11110000)
+			numberOfBytes = 4;
+		} else {
+			return false;
+		}
+		for(int j=1;j<numberOfBytes;j++) { // check that the next n bytes start with 10xxxxxx
+			if(i+j>=data.length) return false;
+			if((data[i+j] & 192) != 128) return false; // 192(11000000), 128(10000000)
+		}
+		i=i+numberOfBytes-1;
+	}
+	return isValid;
+}
 
